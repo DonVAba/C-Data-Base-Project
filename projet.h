@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 
 // Définition des structures // Setting up structure
@@ -14,10 +15,10 @@ typedef struct
 typedef struct 
 {
        char idJeu[10];
-       char nomJeu[25];
+       char nomJeu[40];
        char typeJeu[25];
        int nbExJeu;
-}Jeux;
+}Jeu;
 
 
 typedef struct 
@@ -53,9 +54,10 @@ typedef struct
 Date lireDate(FILE *flot);
 void affichageDate(Date d);
 
-int chargerJeux(char* fileName, Jeux* tJeux[], int maxsize);
-void affichageListeJeux(Jeux* tJeux[]);
-Jeux lireJeu(FILE *flot);
+int chargerJeux(char* fileName, Jeu* tJeux[], int maxsize);
+void affichageListeJeux(Jeu* tJeux[]);
+Jeu lireJeu(FILE *flot);
+void affichageJeux(int size, Jeu *tJeux[]);
 
 int chargerAdherents(char* fileName, Adherent* tAdherent[], int maxsize);
 
@@ -65,3 +67,17 @@ Emprunt lireEmprunt(FILE *flot);
 int chargerReservation(char* fileName, Reservation* tReservation[], int maxsize);
 Reservation lireReservation(FILE *flot);
 void affichageReservation(Reservation r);
+
+void sauvegardeTjeux(Jeu *tJeux[], int nbJeux);
+void restaureTJeux(Jeu *tJeux[], int *nbJeux);
+
+
+
+
+
+
+
+
+
+
+

@@ -20,11 +20,11 @@ void affichageDate(Date d)
 
 //---------------------- JEUX ------------------------------------------------
 
-int chargerJeux(char* fileName, Jeux* tJeux[], int maxsize) // Loading the game's file
+int chargerJeux(char* fileName, Jeu* tJeux[], int maxsize) // Loading the game's file
 
 {
 	FILE *flot;
-	Jeux j;
+	Jeu j;
 	int i=0;
 
 	flot=fopen(fileName,"r");
@@ -42,7 +42,7 @@ int chargerJeux(char* fileName, Jeux* tJeux[], int maxsize) // Loading the game'
 			fclose(flot);
 			return -1;
 		}
-		tJeux[i]=(Jeux *) malloc(sizeof(Jeux));
+		tJeux[i]=(Jeu *) malloc(sizeof(Jeu));
 		if (tJeux[i]==NULL)
 		{
 			printf("Error : problem during allocation !\n");
@@ -59,20 +59,33 @@ int chargerJeux(char* fileName, Jeux* tJeux[], int maxsize) // Loading the game'
 }
 
 
-Jeux lireJeu(FILE *flot)
+Jeu lireJeu(FILE *flot)
 {
-	Jeux j;
+	Jeu j;
+	int n;
 	fscanf(flot,"%s",j.idJeu);
 	fscanf(flot,"%s",j.typeJeu);
 	fscanf(flot,"%d",&j.nbExJeu);
-	fgets(j.nomJeu,40,flot);
-	j.nomJeu[strlen(j.nomJeu)-1]='\0';
+	fgets(j.nomJeu, 40, flot);
+	n = strlen(j.nomJeu);
+	if(j.nomJeu[n-1]=='\n')
+		j.nomJeu[n-1]='\0';
+	//fscanf(flot,"%s",j.nomJeu);
+	//j.nomJeu[strlen(j.nomJeu)-1]='\0';
 	return j;
 }
 
 					//Lire Jeux
-					//Afficher Liste Jeux
-					//Recherche Jeux
+void affichageJeux(int size, Jeu *tJeux[])  //Afficher Liste Jeux
+{
+	int i;
+	for (i = 0; i < size; i++)
+	{
+		//printf("%s\t%s\t%s\t%d\n",tJeux[i]->idJeu, tJeux[i]->nomJeu, tJeux[i]->typeJeu, tJeux[i]->nbExJeu);
+		printf("%s/%s/%s/\t\t\t%d\n",tJeux[i]->idJeu, tJeux[i]->nomJeu, tJeux[i]->typeJeu, tJeux[i]->nbExJeu);
+	}
+}
+				//Recherche Jeux
 
 
 //---------------------- ADHERENTS ------------------------------------------------
@@ -113,7 +126,7 @@ int chargerAdherents(char* fileName, Adherent* tAdherent[], int maxsize) // Load
 
 	}
 	fclose(flot);
-	return i;
+	return i;			// retourne le nombre de jeux
 }
 
 					//Lire adherent
@@ -234,6 +247,70 @@ void affichageReservation(Reservation r)
 					//Lire Reservation
 					//chercher Réservation
 					
-//---------------------- Sauvegrade en binaire 			
+//---------------------- Sauvegrade en binaire------------------------------------------			
+
+void sauvegardeTjeux(Jeu *tJeux[], int nbJeux)
+{
+	FILE *flot;
+	flot=fopen("jeux.bin", "wb");
+	if(flot == NULL)
+	{
+		printf("pb d'ouveture de fichier de sauvegarde\n");
+		return;
+	}
+	fprintf(flot, "%d\n", nbJeux);
+	fwrite(tJeux, sizeof(Jeu), nbJeux, flot);
+	fclose(flot);
+}
+
+//--------------------- Restauration/Chargement des fichiers binaires-------------------
+
+void restaureTJeux(Jeu *tJeux[], int *nbJeux)
+{
+	FILE *flot;
+	flot = fopen("jeux.bin","rb");
+	if (flot == NULL)
+	{
+		printf("pb d'ouverture du fichier binaire\n");
+		return;
+	}
+	fscanf(flot, "%d%*c", nbJeux);
+	*tJeux=(Jeu*) malloc (*nbJeux*sizeof(Jeu));
+	if (tJeux == NULL)
+	{
+		printf("pb sur malloc de tresult\n");
+		*nbJeux = -1;
+		fclose(flot);
+		return;
+	}
+	fread(*tJeux, sizeof(Jeu), *nbJeux, flot);
+	fclose(flot);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

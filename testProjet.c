@@ -7,18 +7,15 @@ int main(void)
 
 {
 	char nomFichier[20];
-	int size,i;
-	Jeux *tJeux[20];
+	int size;
+	Jeu *tJeux[40];
 
 	printf("Saisir nom du fichier :");
-	scanf("%s",nomFichier);
+	scanf("%s%*c",nomFichier);
 	printf("\n");
 
-	size=chargerJeux(nomFichier,tJeux,20);
-	for (i = 0; i < size; i++)
-	{
-		printf("%s\t%s\t%s\t%d\n",tJeux[i]->idJeu,tJeux[i]->nomJeu,tJeux[i]->typeJeu,tJeux[i]->nbExJeu);
-	}
+	size=chargerJeux(nomFichier,tJeux,40);
+	affichageJeux(size, tJeux);
 	return 0;
 	
 }
