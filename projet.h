@@ -63,4 +63,5 @@ int chargerEmprunt(char* fileName, Emprunt* tEmprunt[], int maxsize);
 Emprunt lireEmprunt(FILE *flot);
 
 int chargerReservation(char* fileName, Reservation* tReservation[], int maxsize);
+Reservation lireReservation(FILE *flot);
 void affichageReservation(Reservation r);

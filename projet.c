@@ -4,20 +4,19 @@
 #include"projet.h"
 
 //---------------------- DATE ------------------------------------------------
-/*
+
 Date lireDate(FILE *flot)
 {
-    Date d;
-    fscanf(flot,"%d%d%d", d.jour,d.mois,d.annee);
- 
-	return d;
+	Date d;
+	fscanf(flot,"%d%d%d", &d.jour, &d.mois, &d.annee);
+ 	return d;
 }
 
 void affichageDate(Date d)
 {
 	printf("%d/%d/%d\n",d.jour,d.mois,d.annee);
 }
-*/
+
 
 //---------------------- JEUX ------------------------------------------------
 
@@ -215,6 +214,15 @@ int chargerReservation(char* fileName, Reservation* tReservation[], int maxsize)
 	return i;
 }
 
+Reservation lireReservation(FILE *flot)
+{
+	Reservation r;
+	fscanf(flot,"%s%s%s", r.idReservation, r.idAdherent, r.idJeu);
+	r.dateReservation=lireDate(flot);
+	return r;
+}
+
+
 void affichageReservation(Reservation r)
 {	
 	printf("ID Réservation\tID Adhérent\tID du jeu\tDate Réservation\n");
@@ -226,5 +234,6 @@ void affichageReservation(Reservation r)
 					//Lire Reservation
 					//chercher Réservation
 					
+//---------------------- Sauvegrade en binaire 			
 
 
