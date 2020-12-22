@@ -3,6 +3,32 @@
 #include <string.h>
 #include"projet.h"
 
+/*void globale(void)
+{
+	char nomFichier[20];
+	int size;
+	Jeu *tJeux[40];
+	choix=choixMenu();
+	while ( choix != 10 )
+	{
+		if ( choix == 1)
+		{
+			size=chargerJeux(nomFichier,tJeux,40);
+		}
+		if( choix == 2)
+		{
+			size=chargerJeux(
+		}
+		if( choix == 3)
+		{
+				
+		}
+		
+		choix = choixMenu();
+
+}*/
+
+
 int main(void)
 
 {

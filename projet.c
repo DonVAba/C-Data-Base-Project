@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
 #include"projet.h"
 
 //---------------------- DATE ------------------------------------------------
@@ -81,8 +81,8 @@ void affichageJeux(int size, Jeu *tJeux[])  //Afficher Liste Jeux
 	int i;
 	for (i = 0; i < size; i++)
 	{
-		//printf("%s\t%s\t%s\t%d\n",tJeux[i]->idJeu, tJeux[i]->nomJeu, tJeux[i]->typeJeu, tJeux[i]->nbExJeu);
-		printf("%s\t%s\t%s\t\t\t\t%d\n",tJeux[i]->idJeu, tJeux[i]->nomJeu, tJeux[i]->typeJeu, tJeux[i]->nbExJeu);
+		printf("%s%s\t%s\n", tJeux[i]->idJeu, tJeux[i]->nomJeu, tJeux[i]->typeJeu);
+		//printf("%s\t%s\t%s\t\t\t\t%d\n",tJeux[i]->idJeu, tJeux[i]->nomJeu, tJeux[i]->typeJeu, tJeux[i]->nbExJeu);
 	}
 }
 				//Recherche Jeux
@@ -287,6 +287,24 @@ void restaureTJeux(Jeu *tJeux[], int *nbJeux)
 	fclose(flot);
 }
 
+//-----------------Choix Menu--------------------------------------
+
+int choixMenu(void)
+{
+	int choix;
+	printf("Menu :\n\n");
+	printf("0\tRemise à 0 chargement du fichier texte\n");
+	printf("1\tChargement à partir du fichier binaire\n");
+	printf("2\taffichage de la liste des jeux disponibles\n");
+	printf("3\tAffichage de la liste des emprunts\n");
+	printf("4\tAffichage de la liste des réservations pour un jeu donné\n");
+	printf("5\tSaisie d'un nouvel emprunt ou d'une réservation\n");
+	printf("6\tRetour d'un jeux \n");
+	printf("7\tAnnulation d'une réservation\n");
+	printf("10\tQuitter et Sauvegarder\n");
+	scanf("%d%*c", &choix);
+	return choix;
+}
 
 
 
