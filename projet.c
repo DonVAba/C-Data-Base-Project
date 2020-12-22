@@ -82,7 +82,7 @@ void affichageJeux(int size, Jeu *tJeux[])  //Afficher Liste Jeux
 	for (i = 0; i < size; i++)
 	{
 		//printf("%s\t%s\t%s\t%d\n",tJeux[i]->idJeu, tJeux[i]->nomJeu, tJeux[i]->typeJeu, tJeux[i]->nbExJeu);
-		printf("%s/%s/%s/\t\t\t%d\n",tJeux[i]->idJeu, tJeux[i]->nomJeu, tJeux[i]->typeJeu, tJeux[i]->nbExJeu);
+		printf("%s\t%s\t%s\t\t\t\t%d\n",tJeux[i]->idJeu, tJeux[i]->nomJeu, tJeux[i]->typeJeu, tJeux[i]->nbExJeu);
 	}
 }
 				//Recherche Jeux
