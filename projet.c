@@ -85,7 +85,7 @@ void affichageJeux(int size, Jeu *tJeux[])  //Afficher Liste Jeux
 		//printf("%s\t%s\t%s\t\t\t\t%d\n",tJeux[i]->idJeu, tJeux[i]->nomJeu, tJeux[i]->typeJeu, tJeux[i]->nbExJeu);
 	}
 }
-				//Recherche Jeux
+				//Recherche Jeux test2
 
 
 //---------------------- ADHERENTS ------------------------------------------------
