@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
 
 // Définition des structures // Setting up structure
@@ -15,10 +14,10 @@ typedef struct
 typedef struct 
 {
        char idJeu[10];
-       char nomJeu[40];
+       char nomJeu[25];
        char typeJeu[25];
        int nbExJeu;
-}Jeu;
+}Jeux;
 
 
 typedef struct 
@@ -53,31 +52,30 @@ typedef struct
 
 Date lireDate(FILE *flot);
 void affichageDate(Date d);
+Date ecrireDate(void);
 
-int chargerJeux(char* fileName, Jeu* tJeux[], int maxsize);
-void affichageListeJeux(Jeu* tJeux[]);
-Jeu lireJeu(FILE *flot);
-void affichageJeux(int size, Jeu *tJeux[]);
+int chargerJeux(char* fileName, Jeux* tJeux[], int maxsize);
+void affichageListeJeuxDisponibles(Jeux* tJeux[],int GameSize,char type[]);
+Jeux lireJeu(FILE *flot);
+void triJeux(Jeux *TempJeux[],int size);
+int RechercheRMin(Jeux *TempJ[],int i,int n);
+void permutation(Jeux *TempJ[],int i,int j)	;
+void testTrijeux(void);
 
 int chargerAdherents(char* fileName, Adherent* tAdherent[], int maxsize);
+Adherent lireAdherent(FILE *flot);
+Adherent creerAdherent(Adherent *tAdherent[], int nbAd);
+int chercherAdherent(char*prenom, char*nom, Adherent*tAdherent[], int nbAd);
+void testCreerAdherent(void);
+void creerNomUtil(char prenom[],char nom[],int n,int p,char IdUtil[]);
 
 int chargerEmprunt(char* fileName, Emprunt* tEmprunt[], int maxsize);
 Emprunt lireEmprunt(FILE *flot);
 
 int chargerReservation(char* fileName, Reservation* tReservation[], int maxsize);
-Reservation lireReservation(FILE *flot);
 void affichageReservation(Reservation r);
+Reservation lireReservation(FILE *flot);
 
-void sauvegardeTjeux(Jeu *tJeux[], int nbJeux);
-void restaureTJeux(Jeu *tJeux[], int *nbJeux);
-
-
-
-
-
-
-
-
-
-
-
+int blanc(char c);
+void partieGauche(char source[],char dest[],int p);
+void supprimeBlanc(char source[],char dest[]);

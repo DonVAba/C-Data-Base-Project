@@ -1,30 +1,61 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #include"projet.h"
 
 //---------------------- DATE ------------------------------------------------
 
 Date lireDate(FILE *flot)
 {
-	Date d;
-	fscanf(flot,"%d%d%d", &d.jour, &d.mois, &d.annee);
- 	return d;
+    Date d;
+    fscanf(flot,"%d/%d/%d%*c",&d.jour,&d.mois,&d.annee);
+ 
+	return d;
 }
 
 void affichageDate(Date d)
 {
-	printf("%d/%d/%d\n",d.jour,d.mois,d.annee);
+	printf("%d/%d/%d",d.jour,d.mois,d.annee);
 }
 
+Date ecrireDate(void)
+{
+    Date d;
+    printf("Ecrire le jour(1-31)\n");
+    scanf("%d",&d.jour);
+    while (d.jour<1 || d.jour>31)
+    {
+    	printf("Erreur, ecrire correctement le jour(1-31)\n");
+    	scanf("%d", &d.jour);
+    }
+
+
+    printf("Ecrire le mois(1-12)\n");
+    scanf("%d", &d.mois);
+    while (d.mois<1 || d.mois>12)
+    {
+    	printf("Erreur, ecrire correctement le mois(1-12)\n");
+    	scanf("%d", &d.mois);
+    }
+
+    printf("Ecrire l'annee(2020-20XX)\n");
+    scanf("%d", &d.annee);
+    while (d.annee<2020)
+    {
+    	printf("Erreur, ecrire correctement l'annee(2020-20XX)\n");
+    	scanf("%d", &d.annee);
+    }
+ 
+	return d;
+}		
 
 //---------------------- JEUX ------------------------------------------------
 
-int chargerJeux(char* fileName, Jeu* tJeux[], int maxsize) // Loading the game's file
+int chargerJeux(char* fileName, Jeux* tJeux[], int maxsize) // Loading the game's file
 
 {
 	FILE *flot;
-	Jeu j;
+	Jeux j;
 	int i=0;
 
 	flot=fopen(fileName,"r");
@@ -33,7 +64,7 @@ int chargerJeux(char* fileName, Jeu* tJeux[], int maxsize) // Loading the game's
 		printf("Error : File %s can't be opened !\n",fileName);
 		return -1;
 	}
-	j=lireJeu(flot); // LIRE JEU + AFFICHER JEU A FAIRE !!
+	j=lireJeu(flot); //  AFFICHER JEU A FAIRE !!
 	while(!feof(flot))
 	{
 		if (i==maxsize)
@@ -42,7 +73,7 @@ int chargerJeux(char* fileName, Jeu* tJeux[], int maxsize) // Loading the game's
 			fclose(flot);
 			return -1;
 		}
-		tJeux[i]=(Jeu *) malloc(sizeof(Jeu));
+		tJeux[i]=(Jeux *) malloc(sizeof(Jeux));
 		if (tJeux[i]==NULL)
 		{
 			printf("Error : problem during allocation !\n");
@@ -59,33 +90,118 @@ int chargerJeux(char* fileName, Jeu* tJeux[], int maxsize) // Loading the game's
 }
 
 
-Jeu lireJeu(FILE *flot)
+Jeux lireJeu(FILE *flot)
 {
-	Jeu j;
-	int n;
+	Jeux j;
 	fscanf(flot,"%s",j.idJeu);
 	fscanf(flot,"%s",j.typeJeu);
 	fscanf(flot,"%d",&j.nbExJeu);
-	fgets(j.nomJeu, 40, flot);
-	n = strlen(j.nomJeu);
-	if(j.nomJeu[n-1]=='\n')
-		j.nomJeu[n-1]='\0';
-	//fscanf(flot,"%s",j.nomJeu);
-	//j.nomJeu[strlen(j.nomJeu)-1]='\0';
+	fgets(j.nomJeu,40,flot);
+	j.nomJeu[strlen(j.nomJeu)-1]='\0';
 	return j;
 }
 
-					//Lire Jeux
-void affichageJeux(int size, Jeu *tJeux[])  //Afficher Liste Jeux
+void affichageListeJeuxDisponibles(Jeux* tJeux[],int size,char type[])
 {
-	int i;
-	for (i = 0; i < size; i++)
+	int i,j=0;
+	Jeux *temp[40];
+
+	for (i = 0; i < size ; i++)
 	{
-		printf("%s%s\t%s\n", tJeux[i]->idJeu, tJeux[i]->nomJeu, tJeux[i]->typeJeu);
-		//printf("%s\t%s\t%s\t\t\t\t%d\n",tJeux[i]->idJeu, tJeux[i]->nomJeu, tJeux[i]->typeJeu, tJeux[i]->nbExJeu);
+		if (strcmp(tJeux[i]->typeJeu,type)==0)
+		{
+			if (tJeux[i]->nbExJeu > 0)
+			{
+				temp[j]=(Jeux *) malloc(sizeof(Jeux));
+				if (temp[j]==NULL)
+				{
+					printf("Error : problem during allocation !\n");
+					return ;
+				}
+				*temp[j]=*tJeux[i];
+				j=j+1;
+			}
+		}
+	}
+	if (j==0)
+	{
+		printf("No games available !\n");
+		return;
+	}
+	else
+		{
+			triJeux(temp,j); 
+			for (i = 0; i < j; i++)
+			{
+				printf("%s\t\t%s\t\t%d\t%s\n",temp[i]->idJeu,temp[i]->typeJeu,temp[i]->nbExJeu,temp[i]->nomJeu);
+			}
+		}
+	for (i = 0; i < j; i++)
+	{
+		free(temp[i]);
+	}
+
+}
+
+void triJeux(Jeux *TempJeux[],int size)
+{
+	int k,rmin,i;
+	for (k = 0; k < size-1; k++)
+	{
+		rmin=RechercheRMin(TempJeux+k,i,size);
+		permutation(TempJeux+k,rmin,rmin+1);
 	}
 }
-				//Recherche Jeux test2
+
+int RechercheRMin(Jeux *TempJ[],int i,int n)
+{
+	int rmin=i,j;
+	for (j=i+1; i < n; j++)
+	{
+		if (strcmp(TempJ[j]->nomJeu,TempJ[rmin]->nomJeu)<0)
+		{
+			rmin=j;
+		}
+	}
+	return rmin;
+}		
+
+
+void permutation(Jeux *TempJ[],int i,int j)	
+{
+	Jeux *permutation;
+	permutation=TempJ[i];
+	TempJ[i]=TempJ[j];
+	TempJ[j]=permutation;
+}
+
+void testTrijeux(void)
+{
+	char nomFichier[20];
+	int size,i;
+	Jeux *tJeux[20];
+
+	/*printf("Saisir nom du fichier :");
+	scanf("%s",nomFichier);*/
+	printf("\n");
+	size=chargerJeux("test.txt",tJeux,20);
+	printf("ID du Jeu\tType de Jeu\tNbe exemplaires\t\tNom du Jeu\n");
+	printf("\n\n");
+	for (i = 0; i < size; i++)
+	{
+		printf("%s\t\t%s\t\t%d\t%s\n",tJeux[i]->idJeu,tJeux[i]->typeJeu,tJeux[i]->nbExJeu,tJeux[i]->nomJeu);
+	}
+	printf("\n\n");
+	affichageListeJeuxDisponibles(tJeux,size,"carte");
+	for (i = 0; i < size; i++)
+	{
+		free(tJeux[i]);
+	}
+}
+					
+					//Lire Jeux
+					//Afficher Liste Jeux
+					//Recherche Jeux
 
 
 //---------------------- ADHERENTS ------------------------------------------------
@@ -104,7 +220,7 @@ int chargerAdherents(char* fileName, Adherent* tAdherent[], int maxsize) // Load
 		printf("Error : File %s can't be opened !\n",fileName);
 		return -1;
 	}
-	//a=lireAdherent(flot); // LIRE Adherents + AFFICHER Adherents A FAIRE !!
+	a=lireAdherent(flot); // LIRE Adherents + AFFICHER Adherents A FAIRE !!
 	while(!feof(flot))
 	{
 		if (i==maxsize)
@@ -122,15 +238,163 @@ int chargerAdherents(char* fileName, Adherent* tAdherent[], int maxsize) // Load
 		}
 		*tAdherent[i]=a;
 		i=i+1;
-		//a=lireAdherent(flot);
+		a=lireAdherent(flot);
 
 	}
 	fclose(flot);
-	return i;			// retourne le nombre de jeux
+	return i;
 }
 
+Adherent lireAdherent(FILE *flot)
+{
+	Adherent a;
+	fscanf(flot,"%s%*c",a.idAdherent);
+	a.dateInscription=lireDate(flot);
+	fscanf(flot,"%s%*c",a.nomAdherent);
+	fgets(a.prenomAdherent,25,flot);
+	a.prenomAdherent[strlen(a.prenomAdherent)-1]='\0';
+	return a;
+}
 					//Lire adherent
-					//Afficher adherent
+
+Adherent creerAdherent(Adherent *tAdherent[],int nbAd)
+{
+
+	Adherent a;
+	int cherche;
+	char monsieur[3]="Mr";
+	char madame[4]="Mme";
+	char nom[15],prenom[15];
+	printf("Saisir votre nom\n");
+	fgets(a.nomAdherent,20,stdin);
+	a.nomAdherent[strlen(a.nomAdherent)-1]='\0';
+	strcpy(nom,a.nomAdherent);
+	printf("Saisir votre prénom\n");
+	fgets(a.prenomAdherent,20,stdin);
+	a.prenomAdherent[strlen(a.prenomAdherent)-1]='\0';
+	strcpy(prenom,a.prenomAdherent);
+	
+	cherche=chercherAdherent(a.prenomAdherent, a.nomAdherent , tAdherent, nbAd);
+	if(cherche!=-1)
+	{
+		printf("L'adherent existe déjà\n");
+		//return NULL;
+	}
+
+	printf("Saisir votre genre (Mme/Mr)\n");
+	scanf("%s",a.civilite);
+	printf("%s\n",a.civilite);
+	while((strcmp(a.civilite,monsieur)!=0) && strcmp(a.civilite,madame)!=0)
+	{	
+		printf("Erreur, veuillez saisir correctement votre genre (Mme/Mr)\n");
+		scanf("%s", a.civilite);
+		printf("%s\n",a.civilite);
+	}
+	a.dateInscription=ecrireDate();
+
+	creerNomUtil(prenom,nom,4,2,a.idAdherent);
+
+	return a;
+}
+
+
+int chercherAdherent(char*prenom, char*nom, Adherent*tAdherent[], int nbAd)
+{
+	int i;
+	for(i=0;i<nbAd;i++)
+		{
+			if((strcmp(prenom, tAdherent[i]->prenomAdherent)==0)&&(strcmp(nom,tAdherent[i]->nomAdherent)==0))
+				return i;
+			
+			if((strcmp(prenom, tAdherent[i]->prenomAdherent)==0)&&(strcmp(nom,tAdherent[i]->nomAdherent)<0))
+				return -1;
+		}
+		
+	return -1;
+}
+
+int blanc(char c)
+{
+	if (c==' ' || c=='\t' || c=='\n')
+	{
+		return 1;
+	}
+	return 0;
+}
+
+void supprimeBlanc(char source[],char dest[])
+{
+	int i=0,j=0;
+	while(source[i]!='\0')
+	{
+		if (blanc(source[i])==0)
+		{
+			dest[j]=source[i];
+			j=j+1;
+		}
+		i=i+1;
+	}
+	dest[j]='\0';
+}
+
+void partieGauche(char source[],char dest[],int p)
+{
+	strcpy(dest,source);
+	if (p<strlen(source))
+		dest[p]='\0';
+}
+
+
+
+void creerNomUtil(char prenom[],char nom[],int n,int p,char IdUtil[])
+{
+	supprimeBlanc(prenom,prenom);
+	supprimeBlanc(nom,nom);
+	partieGauche(prenom,prenom,p);
+	partieGauche(nom,nom,n);
+	strcpy(IdUtil,strcat(prenom,nom));
+}
+
+
+void testCreerAdherent(void)
+{	
+	int size,i;
+	Adherent *tAdherent[50],a;
+	size=chargerAdherents("adherent.txt",tAdherent,50);
+	printf("\n");
+	for (i = 0; i < size; i++)
+	{
+		printf("%s\t",tAdherent[i]->idAdherent);
+		affichageDate(tAdherent[i]->dateInscription);
+		printf("%s\t%s\t%s",tAdherent[i]->civilite,tAdherent[i]->nomAdherent,tAdherent[i]->prenomAdherent);
+		printf("\n");
+	}
+
+	printf("\n\n");
+	a=creerAdherent(tAdherent,size);
+	tAdherent[size]=(Adherent *) malloc(sizeof(Adherent));
+
+		if (tAdherent[size]==NULL)
+		{
+			printf("Error : problem during allocation !\n");
+			return;
+		}
+	*tAdherent[size]=a;
+	size=size+1;
+
+	for (i = 0; i < size; i++)
+	{
+		printf("%s\t",tAdherent[i]->idAdherent);
+		affichageDate(tAdherent[i]->dateInscription);
+		printf("\t%s\t%s\t%s",tAdherent[i]->civilite,tAdherent[i]->nomAdherent,tAdherent[i]->prenomAdherent);
+		printf("\n");
+	}
+	for (i = 0; i < size; i++)
+	{
+		free(tAdherent[i]);
+	}
+
+}
 
 
 
@@ -227,15 +491,6 @@ int chargerReservation(char* fileName, Reservation* tReservation[], int maxsize)
 	return i;
 }
 
-Reservation lireReservation(FILE *flot)
-{
-	Reservation r;
-	fscanf(flot,"%s%s%s", r.idReservation, r.idAdherent, r.idJeu);
-	r.dateReservation=lireDate(flot);
-	return r;
-}
-
-
 void affichageReservation(Reservation r)
 {	
 	printf("ID Réservation\tID Adhérent\tID du jeu\tDate Réservation\n");
@@ -244,91 +499,11 @@ void affichageReservation(Reservation r)
 	printf("\n");
 }
 
+Reservation lireReservation(FILE *flot)
+{}
+
 					//Lire Reservation
 					//chercher Réservation
 					
-//---------------------- Sauvegrade en binaire------------------------------------------			
-
-void sauvegardeTjeux(Jeu *tJeux[], int nbJeux)
-{
-	FILE *flot;
-	flot=fopen("jeux.bin", "wb");
-	if(flot == NULL)
-	{
-		printf("pb d'ouveture de fichier de sauvegarde\n");
-		return;
-	}
-	fprintf(flot, "%d\n", nbJeux);
-	fwrite(tJeux, sizeof(Jeu), nbJeux, flot);
-	fclose(flot);
-}
-
-//--------------------- Restauration/Chargement des fichiers binaires-------------------
-
-void restaureTJeux(Jeu *tJeux[], int *nbJeux)
-{
-	FILE *flot;
-	flot = fopen("jeux.bin","rb");
-	if (flot == NULL)
-	{
-		printf("pb d'ouverture du fichier binaire\n");
-		return;
-	}
-	fscanf(flot, "%d%*c", nbJeux);
-	*tJeux=(Jeu*) malloc (*nbJeux*sizeof(Jeu));
-	if (tJeux == NULL)
-	{
-		printf("pb sur malloc de tresult\n");
-		*nbJeux = -1;
-		fclose(flot);
-		return;
-	}
-	fread(*tJeux, sizeof(Jeu), *nbJeux, flot);
-	fclose(flot);
-}
-
-//-----------------Choix Menu--------------------------------------
-
-int choixMenu(void)
-{
-	int choix;
-	printf("Menu :\n\n");
-	printf("0\tRemise à 0 chargement du fichier texte\n");
-	printf("1\tChargement à partir du fichier binaire\n");
-	printf("2\taffichage de la liste des jeux disponibles\n");
-	printf("3\tAffichage de la liste des emprunts\n");
-	printf("4\tAffichage de la liste des réservations pour un jeu donné\n");
-	printf("5\tSaisie d'un nouvel emprunt ou d'une réservation\n");
-	printf("6\tRetour d'un jeux \n");
-	printf("7\tAnnulation d'une réservation\n");
-	printf("10\tQuitter et Sauvegarder\n");
-	scanf("%d%*c", &choix);
-	return choix;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
