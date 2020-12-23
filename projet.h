@@ -60,6 +60,7 @@ Jeux lireJeu(FILE *flot);
 void triJeux(Jeux *TempJeux[],int size);
 int RechercheRMin(Jeux *TempJ[],int i,int n);
 void permutation(Jeux *TempJ[],int i,int j)	;
+void sauvegardeJEUXNormale(Jeux *tJeux[], int nbJeux);
 void testTrijeux(void);
 
 int chargerAdherents(char* fileName, Adherent* tAdherent[], int maxsize);
@@ -67,7 +68,9 @@ Adherent lireAdherent(FILE *flot);
 Adherent creerAdherent(Adherent *tAdherent[], int nbAd);
 int chercherAdherent(char*prenom, char*nom, Adherent*tAdherent[], int nbAd);
 void testCreerAdherent(void);
+void sauvegardeNormaleAdherent(Adherent *tAdherent[], int nbAdherent);
 void creerNomUtil(char prenom[],char nom[],int n,int p,char IdUtil[]);
+
 
 int chargerEmprunt(char* fileName, Emprunt* tEmprunt[], int maxsize);
 Emprunt lireEmprunt(FILE *flot);
@@ -76,6 +79,14 @@ int chargerReservation(char* fileName, Reservation* tReservation[], int maxsize)
 void affichageReservation(Reservation r);
 Reservation lireReservation(FILE *flot);
 
+void afficherMenuType(void);
+int choixMenuType(void);
+void MenuType(void);
+void afficherSousMenuEmprunt(void);
+int choixSousMenuEmprunt(void);
+void sousMenuEmprunt(void);
+
 int blanc(char c);
 void partieGauche(char source[],char dest[],int p);
 void supprimeBlanc(char source[],char dest[]);
+void minuscule(char chaine[]);
