@@ -117,6 +117,39 @@ Jeux lireJeu(FILE *flot)
 	return j;
 }
 
+int supprimerJeux(Jeux* tJeux[], int nbJeux)
+{
+	int rang, i;
+	char idJeu[10];
+	printf("Please type the game ID you want to delete\n");
+	scanf("%s%*c", idJeu);
+	rang=chercherJeux(idJeu,tJeux,nbJeux);
+	
+	if (rang==-1)
+		return nbJeux;
+	free(tJeux[rang]);
+	for (i = rang; i < nbJeux-1; i++)
+	{
+		tJeux[i]=tJeux[i+1];
+	}
+	return nbJeux-1;
+}
+
+int chercherJeux(char idJeu[], Jeux *tJeux[], int nbJeux)
+{
+	int i;
+	for(i=0 ; i < nbJeux ; i++)
+		{	
+			if(strcmp(idJeu, tJeux[i]->idJeu)==0)
+				return i;
+			
+			//if(strcmp(idJeu, tJeux[i]->idJeu)<0)
+			//	return -1;
+		}
+		
+	return -1;
+}
+
 void affichageListeJeuxDisponibles(Jeux* tJeux[],int size,char type[]) 		// LISTES possible si jamais
 {
 	int i,j=0;
@@ -215,11 +248,46 @@ void sauvegardeJEUXNormale(Jeux *tJeux[], int nbJeux)
     fclose(flot);
 }
 
-					
-					//Lire Jeux
-					//Afficher Liste Jeux
-		
+void sauvegardeTjeux(Jeux *tJeux[], int nbJeux)
+{
+	FILE *flot;
+	int i;
+	flot=fopen("jeux.bin", "wb");
+	if(flot == NULL)
+	{
+		printf("pb d'ouveture de fichier de sauvegarde\n");
+		return;
+	}
+	fprintf(flot, "%d\n", nbJeux);
+	for(i=0; i<nbJeux; i++)
+	{
+		fwrite(tJeux[i], sizeof(Jeux), 1, flot);
+	}
+	fclose(flot);
+}
 
+void restaureTJeux(Jeux *tJeux[], int *nbJeux)
+{
+	FILE *flot;
+	flot = fopen("jeux.bin", "rb");
+	if (flot == NULL)
+	{
+		printf("pb d'ouverture du fichier binaire\n");
+		return;
+	}
+	fscanf(flot, "%d%*c", nbJeux);
+	*tJeux=(Jeux*) malloc (*nbJeux*sizeof(Jeux));
+	if (tJeux == NULL)
+	{
+		printf("pb sur malloc de tresult\n");
+		*nbJeux = -1;
+		fclose(flot);
+		return;
+	}
+	fread(*tJeux, sizeof(Jeux), *nbJeux, flot);
+	fclose(flot);
+}
+					
 
 					//Recherche Jeux
 
@@ -283,7 +351,7 @@ Adherent lireAdherent(FILE *flot)
 }
 					//Lire adherent
 
-Adherent creerAdherent(Adherent *tAdherent[],int nbAd)
+Adherent creerAdherent(Adherent *tAdherent[],int nbAdherent)
 {
 
 	Adherent a;
@@ -302,7 +370,7 @@ Adherent creerAdherent(Adherent *tAdherent[],int nbAd)
 	strcpy(prenom,a.prenomAdherent);
 	minuscule(prenom);
 	
-	cherche=chercherAdherent(a.prenomAdherent, a.nomAdherent , tAdherent, nbAd);
+	cherche=chercherAdherent(a.idAdherent,tAdherent,nbAdherent);
 	if(cherche!=-1)
 	{
 		printf("L'adherent existe déjà\n");
@@ -325,20 +393,40 @@ Adherent creerAdherent(Adherent *tAdherent[],int nbAd)
 }
 
 
-int chercherAdherent(char*prenom, char*nom, Adherent*tAdherent[], int nbAd)
+int chercherAdherent(char *idAdherent,Adherent *tAdherent[],int nbAdherent)
 {
 	int i;
-	for(i=0;i<nbAd;i++)
+	for(i=0 ; i < nbAdherent ; i++)
 		{
-			if((strcmp(prenom, tAdherent[i]->prenomAdherent)==0)&&(strcmp(nom,tAdherent[i]->nomAdherent)==0))
+			if(strcmp(idAdherent, tAdherent[i]->idAdherent)==0)
 				return i;
 			
-			if((strcmp(prenom, tAdherent[i]->prenomAdherent)==0)&&(strcmp(nom,tAdherent[i]->nomAdherent)<0))
-				return -1;
+			//if(strcmp(idAdherent, tAdherent[i]->prenomAdherent)<0)
+				//return -1;
 		}
 		
 	return -1;
 }
+
+int supprimerAdherent(Adherent *tAdherent[], int nbAdherent)
+{
+	int rang, i;
+	char idAdherent[20];
+	printf("Please type the user ID you want to delete\n");
+	scanf("%s%*c", idAdherent);
+	rang=chercherAdherent(idAdherent,tAdherent,nbAdherent);
+	
+	if (rang==-1)
+		return nbAdherent;
+	free(tAdherent[rang]);
+	for (i = rang; i < nbAdherent-1; i++)
+	{
+		tAdherent[i]=tAdherent[i+1];
+	}
+	return nbAdherent-1;
+}
+
+
 
 void sauvegardeNormaleAdherent(Adherent *tAdherent[], int nbAdherent)
 {
@@ -470,20 +558,97 @@ int chargerEmprunt(char* fileName, Emprunt* tEmprunt[], int maxsize) // Loading 
 	return i;
 }
 
+ListeEmprunt chargerListeEmprunt(char* fileName,ListeEmprunt le)
+{
+	FILE *flot;
+	int i=0;
+
+	flot=fopen(fileName,"r");
+	if (flot==NULL)
+	{
+		printf("Error : File %s can't be opened !\n",fileName);
+		exit(1);
+	}
+	le=mettreEnListe(flot,le);
+	fclose(flot);
+	return le;
+	
+
+}
+
+ListeEmprunt mettreEnListe(FILE *flot,ListeEmprunt le)
+{
+	Emprunt e;
+
+	if (feof(flot))
+	{
+		return NULL;
+	}
+	
+	e=lireEmprunt(flot);
+	le=InsertionEnTete(le,e);
+	le->suivant=mettreEnListe(flot,le->suivant);
+	return le;
+	
+}
+
 Emprunt lireEmprunt(FILE *flot)
 {
     Emprunt e;
-    fscanf(flot,"%s%s%s", e.idEmprunt,e.idAdherent, e.idJeux);
+    fscanf(flot,"%s%s%s", e.idEmprunt,e.idAdherent, e.idJeu);
     e.dateEmprunt=lireDate(flot);
     return e;
 }
 
 
-					//Lire Emprunt
-					//Afficher Emprunt
+					
+					
 
+ListeEmprunt empruntvide(void)
+{
+	return NULL;
+}
 
+ListeEmprunt InsertionEnTete(ListeEmprunt le,Emprunt emp)
+{
+	ListeEmprunt le1;
 
+	le1=(ListeEmprunt)malloc(sizeof(MaillonE));
+	if (le1==NULL)
+		return NULL;
+	le1->e=emp;
+	le1->suivant=le;
+	return le1;
+}
+
+void AfficherListeEmprunt(ListeEmprunt le,Adherent *tAdherent[],int nbAdherent, Jeux* tJeux[],int nbJeux)	// A COMPLETER
+{
+	int i,j;
+	if (le==NULL)
+	{
+		return;
+	}
+
+	i=chercherAdherent(le->e.idAdherent,tAdherent,nbAdherent);
+	if (i == -1)
+	{
+		return;
+	}
+	j=chercherJeux(le->e.idJeu,tJeux,nbJeux);
+	if (j == -1)
+	{
+		return;
+	}
+	printf("ID EMPRUNT : %s\n",le->e.idEmprunt);
+	printf("IDENTITÉ : %s ",tAdherent[i]->nomAdherent);
+	printf("%s\n",tAdherent[i]->prenomAdherent);
+	printf("NOM DU JEU : %s\n",tJeux[j]->nomJeu);
+//	printf("%s \t %s \t %s \t %s \t",le->e.idEmprunt,tAdherent[i]->nomAdherent,tAdherent[i]->prenomAdherent,tJeux[j]->nomJeu);
+	printf("DATE EMPRUNT : ");
+	affichageDate(le->e.dateEmprunt);
+	printf("\n\n\n");
+	AfficherListeEmprunt(le->suivant,tAdherent,nbAdherent,tJeux,nbJeux);
+}
 
 
 
@@ -568,31 +733,38 @@ Reservation lireReservation(FILE *flot)
 
 void afficherMenuType(void)
 {
-	printf("1)\t Construction\n");
-	printf("2)\t Plateau\n");
-	printf("3)\t Tuile\n");
-	printf("4)\t Carte\n");
-	printf("5)\t Logique\n");
-	printf("6)\t Retour\n");
+	printf("------------------------------------------------------------------\n\n");
+	printf("\t1)\t Construction\n");
+	printf("\t2)\t Plateau\n");
+	printf("\t3)\t Tuile\n");
+	printf("\t4)\t Carte\n");
+	printf("\t5)\t Logique\n\n");
+	printf("\t6)\t Retour\n\n");
+	printf("------------------------------------------------------------------\n");
 
 }
 
 int choixMenuType(void)
 {
 	int choix;
+	system("clear");
 	afficherMenuType();
 	printf("Please select an option :\n");
 	scanf("%d", &choix);
 	
 	while(choix<1 || choix>6)
 	{
+		system("clear");
 		printf("Error : try to select a right option :\n");
+		afficherMenuType();
 		scanf("%d", &choix);
 		
 	}
 	return choix;
 
 }
+
+
 
 void MenuType(void)
 {
@@ -600,15 +772,15 @@ void MenuType(void)
 	while(choix!=6)
 	{
 		if (choix==1)
-			printf("choix 1\n");
+			printf("choix 1\n");return;
 		if(choix==2)
-			printf("choix 2\n");
+			printf("choix 2\n");return;
 		if (choix==3)
-			printf("choix 1\n");
+			printf("choix 3\n");return;
 		if(choix==4)
-			printf("choix 2\n");
+			printf("choix 4\n");return;
 		if (choix==5)
-			printf("choix 1\n");
+			printf("choix 5\n");return;
 		
 	}
 	return;
@@ -616,20 +788,26 @@ void MenuType(void)
 
 void afficherSousMenuEmprunt(void)
 {
-	printf("1)\t Trie par type\n");
-	printf("2)\t Trie par ordre alphabétique\n");
-	printf("3)\t Retour\n");
+	printf("------------------------------------------------------------------\n\n");
+	printf("\t1)\t Trie par type\n");
+	printf("\t2)\t Tout voir\n");
+	printf("\t3)\t Retour\n");
+	printf("------------------------------------------------------------------\n");
 }
 
 int choixSousMenuEmprunt(void)
 {
 	int choix;
+	system("clear");
 	afficherSousMenuEmprunt();
 	printf("Please select an option :\n");
 	scanf("%d", &choix);
 	
 	while(choix<1 || choix>3)
 	{
+		system("clear");
+		printf("Error : try to select a right option :\n");
+		afficherSousMenuEmprunt();
 		printf("Error : try to select a right option :\n");
 		scanf("%d", &choix);
 		
@@ -637,6 +815,7 @@ int choixSousMenuEmprunt(void)
 	return choix;
 
 }
+
 void sousMenuEmprunt(void)
 {
 	int choix=choixSousMenuEmprunt();

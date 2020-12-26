@@ -7,7 +7,9 @@ int main(void)
 
 {
 	//testTrijeux();
-	testCreerAdherent();
+	//testCreerAdherent();
+	testEmprunt();
+	//testChercherAdherent();
 	return 0;
 	
 }
@@ -41,7 +43,6 @@ void testTrijeux(void)
 
 
 //------------------------------------
-
 
 
 void testCreerAdherent(void)
@@ -84,3 +85,32 @@ void testCreerAdherent(void)
 
 }
 
+
+void testEmprunt(void)
+{
+	ListeEmprunt le;
+	Adherent *tAdherent[50],a;
+	Jeux *tJeux[20];
+	int nbJeux,nbAdherent;
+
+	nbJeux=chargerJeux("jeux.don",tJeux,20);
+	nbAdherent=chargerAdherents("test2.don",tAdherent,50);
+	le=chargerListeEmprunt("emprunt.don",le);
+	printf("\n");
+	AfficherListeEmprunt(le,tAdherent,nbAdherent,tJeux,nbJeux);
+}
+
+void testChercherAdherent(void)
+{
+	int size,i;
+	Adherent *tAdherent[50],a;
+	size=chargerAdherents("test2.don",tAdherent,50);
+
+	i=chercherAdherent("bamartel",tAdherent,size);
+	printf("%d\n",i);
+
+	for (i = 0; i < size; i++)
+	{
+		free(tAdherent[i]);
+	}
+}
