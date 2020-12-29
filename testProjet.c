@@ -3,16 +3,6 @@
 #include <string.h>
 #include"projet.h"
 
-int main(void)
-
-{
-	//testTrijeux();
-	//testCreerAdherent();
-	testEmprunt();
-	//testChercherAdherent();
-	return 0;
-	
-}
 
 //------------------------------------
 
@@ -26,7 +16,7 @@ void testTrijeux(void)
 	/*printf("Saisir nom du fichier :");
 	scanf("%s",nomFichier);*/
 	printf("\n");
-	size=chargerJeux("test2.don",tJeux,20);
+	size=chargerJeux("jeux.don",tJeux,20);
 	printf("ID du Jeu\tType de Jeu\tNbe exemplaires\t\tNom du Jeu\n");
 	printf("\n\n");
 	for (i = 0; i < size; i++)
@@ -113,4 +103,47 @@ void testChercherAdherent(void)
 	{
 		free(tAdherent[i]);
 	}
+}
+
+
+
+/*void testFaireEmprunt(void)
+{
+	int sizeJ, sizeA, i;
+	Adherent *tAdherent[50],a;
+	
+	Emprunt e;
+	ListeEmprunt le;
+	
+	Jeux *tJeux[20];
+	sizeJ=chargerJeux("jeux.don",tJeux,20);
+	sizeA=chargerAdherents("test2.don",tAdherent,50);
+	e=faireEmprunt(le, tJeux, tAdherent, sizeJ, sizeA);
+	return;
+}
+*/
+
+//------------------------------------
+
+int main(void)
+
+{
+	//testTrijeux();
+	//testCreerAdherent();
+	//testEmprunt();
+	//testChercherAdherent();
+	//testFaireEmprunt();
+	Date d,d1,d2;
+	d1.jour=12;
+	d1.mois=1;
+	d1.annee=2010;
+	d2.jour=12;
+	d2.mois=2;
+	d2.annee=2010;
+	d=CompareDate(d1,d2);
+	affichageDate(d);
+	printf("\n");
+
+	return 0;
+	
 }
