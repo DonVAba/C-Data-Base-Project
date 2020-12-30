@@ -133,16 +133,8 @@ int main(void)
 	//testEmprunt();
 	//testChercherAdherent();
 	//testFaireEmprunt();
-	Date d,d1,d2;
-	d1.jour=12;
-	d1.mois=1;
-	d1.annee=2010;
-	d2.jour=12;
-	d2.mois=2;
-	d2.annee=2010;
-	d=CompareDate(d1,d2);
-	affichageDate(d);
-	printf("\n");
+	int i;
+	i=choixMenuGlobal();
 
 	return 0;
 	
