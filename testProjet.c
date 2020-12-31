@@ -6,15 +6,15 @@
 
 //------------------------------------
 
-
+/*
 void testTrijeux(void)
 {
 	char nomFichier[20];
 	int size,i;
 	Jeux *tJeux[20];
 
-	/*printf("Saisir nom du fichier :");
-	scanf("%s",nomFichier);*/
+	//printf("Saisir nom du fichier :");
+	//scanf("%s",nomFichier);
 	printf("\n");
 	size=chargerJeux("jeux.don",tJeux,20);
 	printf("ID du Jeu\tType de Jeu\tNbe exemplaires\t\tNom du Jeu\n");
@@ -30,12 +30,12 @@ void testTrijeux(void)
 		free(tJeux[i]);
 	}
 }
-
+*/
 
 //------------------------------------
 
 
-void testCreerAdherent(void)
+/*void testCreerAdherent(void)
 {	
 	int size,i;
 	Adherent *tAdherent[50],a;
@@ -134,7 +134,7 @@ int main(void)
 	//testChercherAdherent();
 	//testFaireEmprunt();
 	int i;
-	i=choixMenuGlobal();
+	menuGlobal();
 
 	return 0;
 	

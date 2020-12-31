@@ -70,8 +70,8 @@ void affichageDate(Date d);
 Date ecrireDate(void);
 Date plusRecenteDate(Date d1,Date d2);
 
-int chargerJeux(char* fileName, Jeux* tJeux[]);
-int chargementBinaireTJeux(Jeux **tJeux);
+Jeux** chargerJeux(char* fileName, Jeux* tJeux[], int *nbJeux);
+Jeux** chargementBinaireTJeux(Jeux **tJeux, int *nbJeux);
 void affichageTousJeux(Jeux* tJeux[],int GameSize);
 void affichageListeJeuxDisponibles(Jeux* tJeux[],int GameSize,char type[]);
 Jeux lireJeu(FILE *flot);
@@ -88,7 +88,7 @@ void sauvegardeTjeux(Jeux *tJeux[], int nbJeux);
 void restaureTJeux(Jeux *tJeux[], int *nbJeux);
 void testTrijeux(void);
 
-int chargerAdherents(char* fileName, Adherent* tAdherent[]);
+Adherent** chargerAdherents(char* fileName, Adherent* tAdherent[], int *nbAdherent);
 Adherent lireAdherent(FILE *flot);
 void triAdherent(Adherent *TempAdherent[],int size);
 int RechercheRMinA(Adherent *TempA[],int i,int n);
@@ -100,7 +100,7 @@ int supprimerAdherent(Adherent *tAdherent[], int nbAdherent);
 void sauvegardeNormaleAdherent(Adherent *tAdherent[], int nbAdherent);
 void creerNomUtil(char prenom[],char nom[],int n,int p,char IdUtil[]);
 void sauvegardeTAdherentBinaire(Adherent *tAdherents[], int nbAdherents);
-int chargementBinaireTAdherents(Adherent **tAdherents);
+Adherent** chargementBinaireTAdherents(Adherent **tAdherent, int*nbAdherent);
 void testChercherAdherent(void);
 
 
@@ -142,11 +142,10 @@ void freeListeReservation(ListeReservation lr);
 ListeReservation rechercheReservation(ListeReservation lr,char idJeu[]);
 
 void afficherMenuType(void);
-int choixMenuType(void);
-void MenuType(void);
+void MenuType(Jeux* tJeux[], int GameSize);
 void afficherSousMenuJeux(void);
 int choixSousMenuJeux(void);
-void sousMenuEmprunt(void);
+
 void afficheMenuGlobal(void);
 int choixMenuGlobal(void);
 void menuGlobal(void);
