@@ -133,7 +133,6 @@ int main(void)
 	//testEmprunt();
 	//testChercherAdherent();
 	//testFaireEmprunt();
-	int i;
 	menuGlobal();
 
 	return 0;

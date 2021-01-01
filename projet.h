@@ -22,7 +22,7 @@ typedef struct
 
 typedef struct 
 {
-	char idAdherent[20];
+	char idAdherent[30];
 	char civilite[20];
 	char nomAdherent[20];
 	char prenomAdherent[20];
@@ -32,7 +32,7 @@ typedef struct
 
 typedef struct
 {
-	char idEmprunt[20];
+	char idEmprunt[30];
 	char idAdherent[20];
 	char idJeu[20];
 	Date dateEmprunt;

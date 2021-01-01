@@ -215,8 +215,8 @@ int chercherJeux(char idJeu[], Jeux *tJeux[], int nbJeux)
 			if(strcmp(idJeu, tJeux[i]->idJeu)==0)
 				return i;
 			
-			if(strcmp(idJeu, tJeux[i]->idJeu)<0)
-				return i;
+			/*if(strcmp(idJeu, tJeux[i]->idJeu)<0)
+				return -1;*/
 		}
 		
 	return -1;
@@ -391,7 +391,7 @@ Jeux creerJeux(Jeux *tJeux[], int nbJeux,int *rang)
 		scanf("%s%*c",j.typeJeu);
 	}
 	printf("Saisir le nombre d'exemplaire\n");
-	scanf("%d%*c", j.nbExJeu);
+	scanf("%d%*c", &j.nbExJeu);
 	return j;
 }
 
@@ -605,8 +605,8 @@ int chercherAdherent(char idAdherent[],Adherent *tAdherent[],int nbAdherent)
 			if(strcmp(idAdherent, tAdherent[i]->idAdherent)==0)
 				return i;
 			
-			//if(strcmp(idAdherent, tAdherent[i]->prenomAdherent)<0)
-				//return -1;
+			if(strcmp(idAdherent, tAdherent[i]->prenomAdherent)<0)
+				return -1;
 		}
 		
 	return -1;
@@ -860,28 +860,50 @@ Emprunt lireEmprunt(FILE *flot)
 void creationidEmprunt(char idJeu[],char idAdherent[],Date d,char idEmprunt[])
 {	
 	char temp[2];
-
+	int i;
 	strcpy(idEmprunt, "R");
+	printf("test2\n");
 	strcat(idEmprunt, idJeu);
+	printf("test2\n");
 	sprintf(temp, "%d", d.annee);
+	printf("test2\n");
 	strcat(idEmprunt, temp);
+	printf("test2\n");
 	sprintf(temp, "%d", d.mois);
+	printf("test2\n");
 	strcat(idEmprunt, temp);
+	printf("test2\n");
 	sprintf(temp, "%d", d.jour);
+	printf("test2\n");
 	strcat(idEmprunt, temp);
+	printf("test2\n");
 	strcat(idEmprunt, idAdherent);
+	printf("test2\n");
+	printf("%s\n", idEmprunt);
+	i=strlen(idEmprunt);
+	printf("%d\n", i);
 }
 
 
 Emprunt creationEmprunt(char idJeu[],char idAdherent[],Date d)
 {
 	Emprunt e;
-	char idEmprunt[20];
-	creationidEmprunt(idJeu,idAdherent,d,idEmprunt);
-	strcpy(e.idEmprunt,idEmprunt);
+	char temp[2];
+	char temp2[4];
+	printf("test1\n");
+	printf("test2\n");
 	strcpy(e.idJeu,idJeu);
 	strcpy(e.idAdherent,idAdherent);
 	e.dateEmprunt=d;
+	strcpy(e.idEmprunt, "E");
+	strcat(e.idEmprunt, idJeu);
+	sprintf(temp2, "%d", d.annee);
+	strcat(e.idEmprunt, temp2);
+	sprintf(temp, "%d", d.mois);
+	strcat(e.idEmprunt, temp);
+	sprintf(temp, "%d", d.jour);
+	strcat(e.idEmprunt, temp);
+	strcat(e.idEmprunt, idAdherent);
 	return e;
 }
 
@@ -1025,7 +1047,9 @@ void faireUnEmpruntouUneReservation(ListeEmprunt le, ListeReservation lr, Jeux* 
 		scanf("%c%*c", &choix);
 		if (choix == 'n')
 			return;
-		r=creationReservation(idJeu, idAdherent,date);
+		printf("1\n");
+		r=creationReservation(idJeu, idAdherent, date);
+		printf("2\n");
 		lr=ajouterReservation(lr, r);
 	}
 	else
@@ -1037,6 +1061,10 @@ void faireUnEmpruntouUneReservation(ListeEmprunt le, ListeReservation lr, Jeux* 
 		}
 		printf("à faire\n");
 		e=creationEmprunt(idJeu,idAdherent,date);
+		printf("ID EMPRUNT : %s\n",e.idEmprunt);
+		printf("DATE EMPRUNT : ");
+		affichageDate(e.dateEmprunt);
+		printf("\n\n");
 		le=ajouterEmprunt(le,e);
 		tJeux[rangJ]->nbExJeu=tJeux[rangJ]->nbExJeu-1;
 	}
@@ -1172,13 +1200,16 @@ Reservation creationReservation(char idJeu[20], char idAdherent[20],Date dateRes
 {
 	Reservation r;
 	char temp[2];
-	r.dateReservation=dateReservation;
+	char temp2[4];
+	r.dateReservation.jour=dateReservation.jour;
+	r.dateReservation.mois=dateReservation.mois;
+	r.dateReservation.annee=dateReservation.annee;
 	strcpy(r.idJeu, idJeu);
 	strcpy(r.idAdherent, idAdherent);
 	strcpy(r.idReservation, "R");
 	strcat(r.idReservation, idJeu);
-	sprintf(temp, "%d", r.dateReservation.annee);
-	strcat(r.idReservation, temp);
+	sprintf(temp2, "%d", r.dateReservation.annee);
+	strcat(r.idReservation, temp2);
 	sprintf(temp, "%d", r.dateReservation.mois);
 	strcat(r.idReservation, temp);
 	sprintf(temp, "%d", r.dateReservation.jour);
@@ -1426,6 +1457,8 @@ void menuGlobal(void) // MODIF
 	int choix, choixSousMenu, choixType, j;
 	Jeux **tJeux;
 	Adherent **tAdherent;
+	ListeEmprunt le;
+	ListeReservation lr;
 	int nbJeux,nbAdherent;
 	char c;
 	
@@ -1445,19 +1478,10 @@ void menuGlobal(void) // MODIF
 		return;
 	}
 	
-	/*tAdherent=chargementBinaireTAdherents(tAdherent, &nbAdherent);
-	printf("%d\n", nbAdherent);
-    for (j = 0; j < nbAdherent; j++)
-    {
-        printf("%s\t",tAdherent[j]->idAdherent);
-        affichageDate(tAdherent[j]->dateInscription);
-        printf("\t\t%s\t\t%s %s",tAdherent[j]->civilite,tAdherent[j]->nomAdherent,tAdherent[j]->prenomAdherent);
-        printf("\n");
-    }
-    */
+	//tAdherent=chargementBinaireTAdherents(tAdherent, &nbAdherent);
 	//restaureAhderent
-
-
+	le=chargerListeEmprunt("emprunts.don", le);
+	lr=CreationDeLaListe(lr);
 
 	choix=choixMenuGlobal();
 	
@@ -1466,99 +1490,64 @@ void menuGlobal(void) // MODIF
 	{
 		if (choix==1)
 		{
-		choixSousMenu=choixSousMenuJeux();//reaffiche sous menu jeux - choisir/lire - reaffiche/demande de reecrire - return choix 
-		while(choixSousMenu!=3)//entrée dans le sous menu
-		{
-			
-			if (choixSousMenu==1)
+			choixSousMenu=choixSousMenuJeux();//reaffiche sous menu jeux - choisir/lire - reaffiche/demande de reecrire - return choix 
+			while(choixSousMenu!=3)//entrée dans le sous menu
 			{
-				
-				choixType=choixMenuType();//affiche menu type - choisir/lire - reaffiche demande reecrire - return choix
-				while(choixType!=6)
+			
+				if (choixSousMenu==1)
 				{
-					if (choixType==1)
+				
+					choixType=choixMenuType();//affiche menu type - choisir/lire - reaffiche demande reecrire - return choix
+					while(choixType!=6)
 					{
-						affichageListeJeuxDisponibles(tJeux,nbJeux, "construction" );
-					}
-					if(choixType==2)
-
-						affichageListeJeuxDisponibles(tJeux, nbJeux, "plateau" );
+						if (choixType==1)
+						{
+							affichageListeJeuxDisponibles(tJeux,nbJeux, "construction" );
+						}
+						if(choixType==2)
+							affichageListeJeuxDisponibles(tJeux, nbJeux, "plateau" );
 					
-					if (choixType==3)
-						affichageListeJeuxDisponibles(tJeux, nbJeux, "tuile");
+						if (choixType==3)
+							affichageListeJeuxDisponibles(tJeux, nbJeux, "tuile");
 						
-					if(choixType==4)
-						affichageListeJeuxDisponibles(tJeux, nbJeux, "carte");
+						if(choixType==4)
+							affichageListeJeuxDisponibles(tJeux, nbJeux, "carte");
 						
-					if (choixType==5)
-						affichageListeJeuxDisponibles(tJeux, nbJeux, "logique");
+						if (choixType==5)
+							affichageListeJeuxDisponibles(tJeux, nbJeux, "logique");
 						
-					choixType=choixMenuType();
+						choixType=choixMenuType();
+					}	
 				}
-			}
 			
-			if(choixSousMenu==2)
-			{
+				if(choixSousMenu==2)
+				{
 				printf("%d\n", nbJeux);
 				affichageTousJeux(tJeux, nbJeux);			
-				
-
-			}
-			choixSousMenu=choixSousMenuJeux();
-		}//sortie du sous menu
-				
-	choix=choixMenuGlobal();
-
-
-		}
-		/*else 
-			if (choix == 2)
-			{
-				printf("Code de la matière à saisir : ");
-				scanf("%s",codeMat);
-		
-				i=rechmat(code,tmat,nbmat);
-				if(i==-1)
-					printf("La matière recherchée n'est pas enregistrée\n");
-				else
-					printf("La matière recherchée se situe en postion %d\n",i);
-		
-			}
-			else 
-				if (choix == 3)
-				{
-					nbmat=supMat(tmat,nbmat);
-						if (nbmat == -1)
-						{
-							return;
-						}
 				}
+				choixSousMenu=choixSousMenuJeux();
+			}	
+		}//sortie du sous menu
+		if(choix==2)
+		{
+			faireUnEmpruntouUneReservation(le, lr, tJeux, tAdherent, nbJeux, nbAdherent);
+		}		
+		if(choix==4)
+		{
+			AfficherListeEmprunt(le, tAdherent, nbAdherent, tJeux, nbJeux);
+		}	
+		if(choix==5)
+		{
+			AfficherListeReservation(lr, tAdherent, nbAdherent, tJeux, nbJeux);
+		}	
 
-				else 
-					if (choix == 4)
-					{
+		//Appel de retour d'un jeu
+		choix=choixMenuGlobal();
+	}
 
-						nbmat=ajoutMat(tmat,nbmat,TMAX);
-						if (nbmat == -2)
-						{
-							printf("Tableau plein !\n");
-							return;
-
-						}
-
-						
-					}
-
-					else
-						if (choix == 5)	
-						{
-							modifMat(tmat,nbmat);
-
-						}
 		printf("\n\nTapez sur la touche entrée pour revenir au menu ..\n");				
 		c=getchar();			
-		choix=choixMenuGlobal();*/
-	}
+		choix=choixMenuGlobal();
 
 }
 
