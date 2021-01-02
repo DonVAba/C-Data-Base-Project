@@ -989,7 +989,7 @@ ListeEmprunt chercherEmprunt(ListeEmprunt le,char idEmprunt[])
 	{
 		le->suivant=chercherEmprunt(le->suivant,idEmprunt);
 	}
-	return NULL;
+	
 }
 
 ListeEmprunt supprimerEmprunt(ListeEmprunt le,char idEmprunt[])
