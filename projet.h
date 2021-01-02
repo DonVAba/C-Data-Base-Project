@@ -150,6 +150,8 @@ void afficheMenuGlobal(void);
 int choixMenuGlobal(void);
 void menuGlobal(void);
 
+int choixSousMenuAdmin(void);
+void afficherSousMenuAdmin(void);
 //MENU A MODIF
 
 int blanc(char c);
