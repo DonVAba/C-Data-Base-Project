@@ -322,15 +322,20 @@ void retourJeux(Jeux *tJeux[],ListeEmprunt le,ListeReservation lr,int nbJeux)
 
 	printf("Saisir l'ID de votre emprunt : ");
 	scanf("%s",idEmprunt);
-	le=chercherEmprunt(le,idEmprunt);
+	printf("%s\n", idEmprunt);
+	le=chercherEmprunt(le, idEmprunt);
+	printf("%s\n", le->e.idEmprunt);
 	if (le==NULL)
 	{
 		printf("\nErreur : L'emprunt %s n'existe pas !",idEmprunt);
 		return;
 	}
 	strcpy(tempIdJeu,le->e.idJeu);
+	printf("coucou\n");
 	le=supprimerEmprunt(le,idEmprunt);
+	printf("coucou\n");
 	lr=rechercheReservation(lr,tempIdJeu);
+	printf("coucou\n");
 	if (lr!=NULL)
 	{
 		d=ecrireDate();
@@ -978,15 +983,34 @@ ListeEmprunt chercherEmprunt(ListeEmprunt le,char idEmprunt[])
 	{
 		return le;
 	}
-	if (strcmp(le->e.idEmprunt,idEmprunt)==0)
+	if (strcmp(le->e.idEmprunt, idEmprunt)==0)
 			return le;
 	else
-		{
-			le->suivant=chercherEmprunt(le->suivant,idEmprunt);
-			return le;
-		}
+	{
+		le->suivant=chercherEmprunt(le->suivant,idEmprunt);
+	}
+	return NULL;
 }
 
+ListeEmprunt supprimerEmprunt(ListeEmprunt le,char idEmprunt[])
+{
+	if(le==NULL)
+	{
+		return le;
+	}
+	if(strcmp(le->e.idEmprunt, idEmprunt) == 0)
+	{
+		return supprimerEnTeteEmprunt(le);
+	}
+	if(strcmp(le->e.idEmprunt, idEmprunt) > 0)
+	{
+		return le;
+	}
+	le->suivant=supprimerEmprunt(le->suivant, idEmprunt);
+	return le;
+}
+
+/*
 ListeEmprunt supprimerEmprunt(ListeEmprunt le,char idEmprunt[])
 {
 	if (strcpy(le->e.idEmprunt,idEmprunt)==0)
@@ -994,8 +1018,9 @@ ListeEmprunt supprimerEmprunt(ListeEmprunt le,char idEmprunt[])
 		return supprimerEnTeteEmprunt(le);
 	}
 	le->suivant=supprimerEmprunt(le->suivant,idEmprunt);
+	return le;
 }
-
+*/
 ListeEmprunt supprimerEnTeteEmprunt(ListeEmprunt le)
 {
 	ListeEmprunt svt;
@@ -1486,7 +1511,7 @@ void menuGlobal(void) // MODIF
 	choix=choixMenuGlobal();
 	
 	
-	while (choix != 7)
+	while (choix != 8)
 	{
 		if (choix==1)
 		{
@@ -1540,7 +1565,10 @@ void menuGlobal(void) // MODIF
 		{
 			AfficherListeReservation(lr, tAdherent, nbAdherent, tJeux, nbJeux);
 		}	
-
+		if(choix == 6)
+		{
+			retourJeux(tJeux, le, lr, nbJeux);
+		}
 		//Appel de retour d'un jeu
 		choix=choixMenuGlobal();
 	}
@@ -1563,9 +1591,10 @@ void afficheMenuGlobal(void)
 	printf("\t\t\t\t\t\t 3\tAnnulation d'une réservation\n");
 	printf("\t\t\t\t\t\t 4\tAfficher les emprunts\n");
 	printf("\t\t\t\t\t\t 5\tAfficher les réservations\n");
-	printf("\t\t\t\t\t\t 6\tFonction Administrateur\n");
+	printf("\t\t\t\t\t\t 6\tRetour d'un jeu\n");
+	printf("\t\t\t\t\t\t 7\tFonction Administrateur\n");
 	printf("\t\t\t\n");
-	printf("\t\t\t\t\t\t 7\tQuitter\n");
+	printf("\t\t\t\t\t\t 8\tQuitter\n");
 	printf("\t\t\t\t____________________________________________________________________\n");
 
 }
