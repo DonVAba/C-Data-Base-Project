@@ -981,13 +981,16 @@ ListeEmprunt chercherEmprunt(ListeEmprunt le,char idEmprunt[])
 	int i=0;
 	if (le==NULL)
 	{
-		return le;
+		return NULL;
 	}
 	if (strcmp(le->e.idEmprunt, idEmprunt)==0)
 			return le;
 	else
 	{
-		le->suivant=chercherEmprunt(le->suivant,idEmprunt);
+		if (strcmp(le->e.idEmprunt, idEmprunt)>0)
+		{
+			le->suivant=chercherEmprunt(le->suivant,idEmprunt);
+		}	
 	}
 	
 }
