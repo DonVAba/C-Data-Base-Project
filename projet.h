@@ -49,7 +49,7 @@ typedef MaillonE * ListeEmprunt;
 
 typedef struct 
 {
-	char idReservation[20];
+	char idReservation[30];
 	char idAdherent[20];
 	char idJeu[20];
 	Date dateReservation;
@@ -68,7 +68,7 @@ typedef MaillonR * ListeReservation;
 Date lireDate(FILE *flot);
 void affichageDate(Date d);
 Date ecrireDate(void);
-Date plusRecenteDate(Date d1,Date d2);
+int plusRecenteDate(Date d1,Date d2);
 
 Jeux** chargerJeux(char* fileName, Jeux* tJeux[], int *nbJeux);
 Jeux** chargementBinaireTJeux(Jeux **tJeux, int *nbJeux);
@@ -81,7 +81,7 @@ int chercherJeux(char idJeu[], Jeux *tJeux[], int nbJeux);
 void triJeux(Jeux *TempJeux[],int size);
 int RechercheRMin(Jeux *TempJ[],int i,int n);
 void permutation(Jeux *TempJ[],int i,int j)	;
-void retourJeux(Jeux *tJeux[],ListeEmprunt le,ListeReservation lr,int nbJeux);
+void retourJeux(Jeux *tJeux[],ListeEmprunt *le, ListeReservation *lr,int nbJeux, Adherent *tAdherent[], int nbAdherent);
 Jeux creerJeux(Jeux *tJeux[], int nbJeux,int *rang);
 void sauvegardeJEUXNormale(Jeux *tJeux[], int nbJeux);
 void sauvegardeTjeux(Jeux *tJeux[], int nbJeux);
@@ -114,8 +114,8 @@ Emprunt creationEmprunt(char idJeu[],char idAdherent[],Date d);
 void creationidEmprunt(char idJeu[],char idAdherent[],Date d,char idEmprunt[]);
 ListeEmprunt InsertionEnTete(ListeEmprunt le,Emprunt emp);
 void AfficherListeEmprunt(ListeEmprunt le,Adherent *tAdherent[],int nbAdherent, Jeux* tJeux[],int nbJeux);
-ListeEmprunt chercherEmprunt(ListeEmprunt le,char idEmprunt[]);
-ListeEmprunt supprimerEmprunt(ListeEmprunt le,char idEmprunt[]);
+int chercherEmprunt(ListeEmprunt le,char idEmprunt[], Emprunt *e);
+ListeEmprunt supprimerEmprunt(ListeEmprunt le, Emprunt e);
 ListeEmprunt supprimerEnTeteEmprunt(ListeEmprunt le);
 int CompteEmprunt(ListeEmprunt le, Emprunt emp, int i);
 void sauvegardeBinaireEmprunts(ListeEmprunt le);
@@ -133,13 +133,13 @@ ListeReservation CreationDeLaListe(ListeReservation lr);
 Reservation lireReservation(FILE *flot);
 Reservation creationReservation(char idJeu[20], char idAdherent[20],Date dateReservation);
 ListeReservation ajouterReservation(ListeReservation lr, Reservation r);
-void AfficherListeReservation(ListeReservation lr, Adherent *tAdherent[], int nbAdherent, Jeux* tJeux[], int nbJeux);
+void afficherListeReservation(ListeReservation lr, Adherent *tAdherent[], int nbAdherent, Jeux* tJeux[], int nbJeux);
 void sauvegardeBinaireReservation(ListeReservation lr);
 ListeReservation chargementBinairetReservations(void);
 ListeReservation supprimerEnTeteUneReservation(ListeReservation lr);
 ListeReservation supprimerUneReservation(ListeReservation lr, Reservation r);
 void freeListeReservation(ListeReservation lr);
-ListeReservation rechercheReservation(ListeReservation lr,char idJeu[]);
+int rechercheReservation(ListeReservation lr ,char idJeu[], Reservation *r);
 
 void afficherMenuType(void);
 void MenuType(Jeux* tJeux[], int GameSize);
