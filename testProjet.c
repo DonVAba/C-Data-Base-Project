@@ -34,12 +34,12 @@ void testTrijeux(void)
 
 //------------------------------------
 
-
-/*void testCreerAdherent(void)
+/*
+void testCreerAdherent(void)
 {	
 	int size,i;
-	Adherent *tAdherent[50],a;
-	size=chargerAdherents("adherent.txt",tAdherent,50);
+	Adherent **tAdherent,a;
+	tAdherent=chargerAdherents("adherents.don", tAdherent, &size);
 	printf("\n");
 	for (i = 0; i < size; i++)
 	{
@@ -73,9 +73,9 @@ void testTrijeux(void)
 		free(tAdherent[i]);
 	}
 
-}
+}*/
 
-
+/*
 void testEmprunt(void)
 {
 	ListeEmprunt le;

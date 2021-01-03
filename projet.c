@@ -363,7 +363,7 @@ Jeux creerJeux(Jeux *tJeux[], int nbJeux,int *rang)
 	
 	char idJeu[10], nomJeu[25], typeJeu[25];
 	printf("Saisir l'ID du jeu\n");
-	scanf("%s*c",j.idJeu);
+	scanf("%s%*c",j.idJeu);
 	minuscule(j.idJeu);
 	*rang=chercherJeux(j.idJeu,tJeux,nbJeux);
 	if(*rang!=-1)
@@ -377,7 +377,7 @@ Jeux creerJeux(Jeux *tJeux[], int nbJeux,int *rang)
 	minuscule(j.nomJeu);
 
 	printf("Saisir le type du jeu (construction, plateau, tuile, carte, logique)\n");
-	scanf("%s*c",j.typeJeu);
+	scanf("%s%*c",j.typeJeu);
 	minuscule(j.typeJeu);
 	while((strcmp(j.typeJeu,"construction")!=0)&&(strcmp(j.typeJeu,"plateau")!=0)&&(strcmp(j.typeJeu,"tuile")!=0)&&(strcmp(j.typeJeu,"carte")!=0)&&(strcmp(j.typeJeu,"logique")!=0))
 	{
@@ -409,7 +409,7 @@ void sauvegardeJEUXNormale(Jeux *tJeux[], int nbJeux)
 }
 */
 
-void sauvegardeTjeux(Jeux *tJeux[], int nbJeux)
+void sauvegardeTjeuxBinaire(Jeux *tJeux[], int nbJeux)
 {
 	FILE *flot;
 	int i;
@@ -432,15 +432,15 @@ void sauvegardeTjeux(Jeux *tJeux[], int nbJeux)
 	}
 	free(tJeux);
 }
-
-void restaureTJeux(Jeux *tJeux[], int *nbJeux)
+/*
+Jeux** restaureTJeux(Jeux *tJeux[], int *nbJeux)
 {
 	FILE *flot;
 	flot = fopen("jeux.bin", "rb");
 	if (flot == NULL)
 	{
 		printf("pb d'ouverture du fichier binaire\n");
-		return;
+		return NULL;
 	}
 	fscanf(flot,"%d%*c",nbJeux);
 	*tJeux=(Jeux*) malloc (*nbJeux*sizeof(Jeux));
@@ -449,11 +449,14 @@ void restaureTJeux(Jeux *tJeux[], int *nbJeux)
 		printf("pb sur malloc de tresult\n");
 		*nbJeux = -1;
 		fclose(flot);
-		return;
+		return NULL;
 	}
 	fread(*tJeux, sizeof(Jeux), *nbJeux, flot);
 	fclose(flot);
+	return tJeux;
 }
+*/
+
 					
 
 					
@@ -549,13 +552,12 @@ Adherent lireAdherent(FILE *flot)
 }
 					//Lire adherent
 
-Adherent creerAdherent(Adherent *tAdherent[],int nbAdherent)
+Adherent creerAdherent(Adherent *tAdherent[],int nbAdherent, int *chercherAdh)
 {
 
 	Adherent a;
-	int cherche;
-	char monsieur[3]="Mr";
-	char madame[4]="Mme";
+	char monsieur[3]="mr";
+	char madame[4]="mme";
 	char nom[15],prenom[15];
 	printf("Saisir votre nom\n");
 	fgets(a.nomAdherent,20,stdin);
@@ -567,27 +569,28 @@ Adherent creerAdherent(Adherent *tAdherent[],int nbAdherent)
 	a.prenomAdherent[strlen(a.prenomAdherent)-1]='\0';
 	strcpy(prenom,a.prenomAdherent);
 	minuscule(prenom);
-	
-	cherche=chercherAdherent(a.idAdherent,tAdherent,nbAdherent);
-	if(cherche!=-1)
+	creerNomUtil(prenom,nom,6,2,a.idAdherent);
+	*chercherAdh=chercherAdherent(a.idAdherent,tAdherent,nbAdherent);
+	printf("%d\n",*chercherAdh);
+	if(*chercherAdh!=-1)
 	{
 		printf("L'adherent existe déjà\n");
-		//return NULL;
 	}
-
-	printf("Saisir votre genre (Mme/Mr)\n");
-	scanf("%s",a.civilite);
-	while((strcmp(a.civilite,monsieur)!=0) && strcmp(a.civilite,madame)!=0)
+	else
 	{	
-		printf("Erreur, veuillez saisir correctement votre genre (Mme/Mr)\n");
-		scanf("%s", a.civilite);
-		printf("%s\n",a.civilite);
-	}
-	a.dateInscription=ecrireDate();
-
-	creerNomUtil(prenom,nom,6,2,a.idAdherent);
-
-	return a;
+		printf("Saisir votre genre (Mme/Mr)\n");
+		scanf("%s%*c",a.civilite);
+		minuscule(a.civilite);
+		while((strcmp(a.civilite,monsieur)!=0) && strcmp(a.civilite,madame)!=0)
+		{	
+			printf("Erreur, veuillez saisir correctement votre genre (Mme/Mr)\n");
+			scanf("%s%*c", a.civilite);
+			printf("%s\n",a.civilite);
+		}
+		a.dateInscription=ecrireDate();
+		creerNomUtil(prenom,nom,6,2,a.idAdherent);
+		return a;
+	}	
 }
 
 
@@ -597,7 +600,9 @@ int chercherAdherent(char idAdherent[],Adherent *tAdherent[],int nbAdherent)
 	for(i=0 ; i < nbAdherent ; i++)
 		{
 			if(strcmp(idAdherent, tAdherent[i]->idAdherent)==0)
+			{	
 				return i;
+			}	
 			
 			if(strcmp(idAdherent, tAdherent[i]->prenomAdherent)<0)
 				return -1;
@@ -837,14 +842,14 @@ ListeEmprunt empruntvide(void)
 
 ListeEmprunt ajouterEmprunt(ListeEmprunt le,Emprunt em)
 {
-	//Date d;
+
 	int d;
 	if (le==NULL)
 	{
 		return InsertionEnTete(le,em);
 	}
 	d=plusRecenteDate(le->e.dateEmprunt,em.dateEmprunt);
-	if (d==2/*d.mois==em.dateEmprunt.mois && d.jour==em.dateEmprunt.jour && d.annee==em.dateEmprunt.annee*/)
+	if (d==2)
 	{
 		return InsertionEnTete(le,em);
 	}
@@ -932,10 +937,6 @@ ListeEmprunt supprimerEmprunt(ListeEmprunt le, Emprunt e)
 	{
 		return supprimerEnTeteEmprunt(le);
 	}
-	/*if(strcmp(le->e.idEmprunt, e.idEmprunt) > 0)
-	{
-		return le;
-	}*/
 	le->suivant=supprimerEmprunt(le->suivant, e);
 	return le;
 }
@@ -943,8 +944,6 @@ ListeEmprunt supprimerEmprunt(ListeEmprunt le, Emprunt e)
 
 ListeEmprunt supprimerEnTeteEmprunt(ListeEmprunt le)
 {
-	printf("coucoublblbl\n");
-	printf("jkl%s\n", le->e.idEmprunt);
 	ListeEmprunt svt;
 	svt=le->suivant;
 	free(le);
@@ -1064,7 +1063,7 @@ ListeEmprunt chargementBinairetEmrunts(void)
 	fread(&e, sizeof(Emprunt), 1, flot);
 	while(!feof(flot))
 	{
-		le=InsertionEnTete(le, e);
+		le=ajouterEmprunt(le, e);
 		fread(&e, sizeof(Emprunt), 1, flot);
 	}
 	fclose (flot);
@@ -1403,14 +1402,14 @@ int choixSousMenuAdmin(void)
 	//system("clear");
 	afficherSousMenuAdmin();
 	printf("Please select an option :\n");
-	scanf("%d", &choix);
+	scanf("%d%*c", &choix);
 	
 	while(choix<1 || choix>5)
 	{
 		//system("clear");
 		afficherSousMenuAdmin();
 		printf("Error : try to select a right option :\n");
-		scanf("%d", &choix);
+		scanf("%d%*c", &choix);
 		
 	}
 	return choix;
@@ -1425,14 +1424,14 @@ int choixSousMenuJeux(void)
 	//system("clear");
 	afficherSousMenuJeux();
 	printf("Please select an option :\n");
-	scanf("%d", &choix);
+	scanf("%d%*c", &choix);
 	
 	while(choix<1 || choix>3)
 	{
 		//system("clear");
 		afficherSousMenuJeux();
 		printf("Error : try to select a right option :\n");
-		scanf("%d", &choix);
+		scanf("%d%*c", &choix);
 		
 	}
 	return choix;
@@ -1445,9 +1444,9 @@ int choixSousMenuJeux(void)
 
 void menuGlobal(void) // MODIF
 {
-	int choix, choixSousMenu, choixType, j, choixSousMenuA;
+	int choix, choixSousMenu, choixType, j, i, choixSousMenuA, chercherAdh;
 	Jeux **tJeux;
-	Adherent **tAdherent;
+	Adherent **tAdherent, a;
 	ListeEmprunt le;
 	ListeReservation lr;
 	Reservation r;
@@ -1456,15 +1455,27 @@ void menuGlobal(void) // MODIF
 	
 	//chargement des fichiers 
 
-	tJeux=chargerJeux("jeux.don",tJeux, &nbJeux);
+	//tJeux=chargerJeux("jeux.don",tJeux, &nbJeux);
+	tJeux=chargementBinaireTJeux(tJeux, &nbJeux);
 	if (nbJeux==-1)
 	{
 		return;
 	}
-	
-	//tJeux=chargementBinaireTJeux(tJeux, &nbJeux);
 	//restaureJeux
-	tAdherent=chargerAdherents("adherents.don",tAdherent, &nbAdherent);
+	//tAdherent=chargerAdherents("adherents.don",tAdherent, &nbAdherent);
+	tAdherent=chargementBinaireTAdherents(tAdherent, &nbAdherent);
+	if (nbAdherent==-1)
+	{
+		return;
+	}
+	triAdherent(tAdherent, nbAdherent);
+	for (i = 0; i < nbAdherent; i++)
+					{
+						printf("%s\t",tAdherent[i]->idAdherent);
+						affichageDate(tAdherent[i]->dateInscription);
+						printf("\t%s\t%s %s",tAdherent[i]->civilite,tAdherent[i]->nomAdherent,tAdherent[i]->prenomAdherent);
+						printf("\n");
+					}
 	if (nbAdherent==-1)
 	{
 		return;
@@ -1472,8 +1483,10 @@ void menuGlobal(void) // MODIF
 	
 	//tAdherent=chargementBinaireTAdherents(tAdherent, &nbAdherent);
 	//restaureAhderent
-	le=chargerListeEmprunt("emprunts2.don", le);
-	lr=CreationDeLaListe(lr);
+	//le=chargerListeEmprunt("emprunts2.don", le);
+	le=chargementBinairetEmrunts();
+	//lr=CreationDeLaListe(lr);
+	lr=chargementBinairetReservations();
 
 	choix=choixMenuGlobal();
 	
@@ -1533,10 +1546,14 @@ void menuGlobal(void) // MODIF
 		if(choix==4)
 		{
 			AfficherListeEmprunt(le, tAdherent, nbAdherent, tJeux, nbJeux);
+			printf("\n\nTapez sur la touche entrée pour revenir au menu ..\n");				
+			c=getchar();
 		}	
 		if(choix==5)
 		{
 			afficherListeReservation(lr, tAdherent, nbAdherent, tJeux, nbJeux);
+			printf("\n\nTapez sur la touche entrée pour revenir au menu ..\n");				
+			c=getchar();
 		}	
 		if(choix == 6)
 		{
@@ -1550,31 +1567,58 @@ void menuGlobal(void) // MODIF
 			
 				if (choixSousMenuA==1)
 				{
+					nbJeux=ajouterJeux(tJeux, nbJeux);
 					
 				}
 				if(choixSousMenuA==2)
 				{
-							
+					nbJeux=supprimerJeux(tJeux, nbJeux);	
 				}
 				if(choixSousMenuA==3)
 				{
-							
+					a=creerAdherent(tAdherent, nbAdherent, &chercherAdh);
+					if (chercherAdh!=1)
+					{
+						tAdherent[nbAdherent]=(Adherent *) malloc(sizeof(Adherent));
+						if (tAdherent[nbAdherent]==NULL)
+						{
+							printf("Erreur durant l'allocation!\n");
+							return;
+						}
+						*tAdherent[nbAdherent]=a;
+						nbAdherent=nbAdherent+1;
+						triAdherent(tAdherent, nbAdherent);
+					}
+					for (i = 0; i < nbAdherent; i++)
+					{
+						printf("%s\t",tAdherent[i]->idAdherent);
+						affichageDate(tAdherent[i]->dateInscription);
+						printf("\t%s\t%s %s",tAdherent[i]->civilite,tAdherent[i]->nomAdherent,tAdherent[i]->prenomAdherent);
+						printf("\n");
+					}
 				}
 				if(choixSousMenuA==4)
 				{
-							
+						nbAdherent=supprimerAdherent(tAdherent, nbAdherent);
+						for (i = 0; i < nbAdherent; i++)
+					{
+						printf("%s\t",tAdherent[i]->idAdherent);
+						affichageDate(tAdherent[i]->dateInscription);
+						printf("\t%s\t%s %s",tAdherent[i]->civilite,tAdherent[i]->nomAdherent,tAdherent[i]->prenomAdherent);
+						printf("\n");
+					}	
 				}
 				choixSousMenuA=choixSousMenuAdmin();
 			}	
 		}
-		//Appel de retour d'un jeu
+		//Appel de retour d'un jeu			
 		choix=choixMenuGlobal();
+
 	}
-
-		printf("\n\nTapez sur la touche entrée pour revenir au menu ..\n");				
-		c=getchar();			
-		choix=choixMenuGlobal();
-
+	//sauvegardeTAdherentBinaire(tAdherent, nbAdherent);
+	//sauvegardeTjeuxBinaire(tJeux, nbJeux);
+	//sauvegardeBinaireReservation(lr);
+	//sauvegardeBinaireEmprunts(le);	
 }
 
 
@@ -1605,7 +1649,7 @@ int choixMenuGlobal(void)
 	afficheMenuGlobal();
 	printf("\n\t\t\t\t\t\t\tVotre choix : ");
 	scanf("%d%*c",&choix);
-	while(choix<1 || choix>7)
+	while(choix<1 || choix>8)
 	{
 		printf("\n\nChoix incorrect");
 		printf("\n\n\n\nTapez sur la touche entrée pour revenir au menu ..\n");
