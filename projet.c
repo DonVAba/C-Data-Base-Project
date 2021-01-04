@@ -349,11 +349,15 @@ int ajouterJeux(Jeux *tJeux[], int nbJeux)
 	Jeux j;
 	int i,rang;
 	j=creerJeux(tJeux,nbJeux,&rang);
-	for (i = nbJeux-1; i > rang; i--)
-	{
-		tJeux[i+1]=tJeux[i];
+	if(rang==-1)
+	{	
+		for (i = nbJeux-1; i > rang; i--)
+		{
+			tJeux[i+1]=tJeux[i];
+		}
+		return nbJeux+1;
 	}
-	return nbJeux+1;
+	return nbJeux;	
 }
 
 Jeux creerJeux(Jeux *tJeux[], int nbJeux,int *rang)
@@ -368,24 +372,27 @@ Jeux creerJeux(Jeux *tJeux[], int nbJeux,int *rang)
 	*rang=chercherJeux(j.idJeu,tJeux,nbJeux);
 	if(*rang!=-1)
 	{
-		printf("Le jeux existe déjà\n");
+		printf("Le jeu existe déjà\n");
 		
 	}
-	printf("Saisir le nom du jeu\n");
-	fgets(j.nomJeu,25,stdin);
-	j.nomJeu[strlen(j.nomJeu)-1]='\0';
-	minuscule(j.nomJeu);
+	else
+	{	
+		printf("Saisir le nom du jeu\n");
+		fgets(j.nomJeu,25,stdin);
+		j.nomJeu[strlen(j.nomJeu)-1]='\0';
+		minuscule(j.nomJeu);
 
-	printf("Saisir le type du jeu (construction, plateau, tuile, carte, logique)\n");
-	scanf("%s%*c",j.typeJeu);
-	minuscule(j.typeJeu);
-	while((strcmp(j.typeJeu,"construction")!=0)&&(strcmp(j.typeJeu,"plateau")!=0)&&(strcmp(j.typeJeu,"tuile")!=0)&&(strcmp(j.typeJeu,"carte")!=0)&&(strcmp(j.typeJeu,"logique")!=0))
-	{
-		printf("Erreur, veuillez saisir correctement le type (construction, plateau, tuile, carte, logique)\n");
+		printf("Saisir le type du jeu (construction, plateau, tuile, carte, logique)\n");
 		scanf("%s%*c",j.typeJeu);
+		minuscule(j.typeJeu);
+		while((strcmp(j.typeJeu,"construction")!=0)&&(strcmp(j.typeJeu,"plateau")!=0)&&(strcmp(j.typeJeu,"tuile")!=0)&&(strcmp(j.typeJeu,"carte")!=0)&&(strcmp(j.typeJeu,"logique")!=0))
+		{
+			printf("Erreur, veuillez saisir correctement le type (construction, plateau, tuile, carte, logique)\n");
+			scanf("%s%*c",j.typeJeu);
+		}
+		printf("Saisir le nombre d'exemplaire\n");
+		scanf("%d%*c", &j.nbExJeu);
 	}
-	printf("Saisir le nombre d'exemplaire\n");
-	scanf("%d%*c", &j.nbExJeu);
 	return j;
 }
 
