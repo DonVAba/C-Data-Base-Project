@@ -1049,10 +1049,10 @@ void sauvegardeBinaireEmprunts(ListeEmprunt le)
 	while(!(le == NULL))
 	{
 		fwrite(le, sizeof(Emprunt), 1, flot);
+		free(le);
 		le=le->suivant;
 	}
 	fclose(flot);
-	freeListeEmprunt(le);
 }
 
 ListeEmprunt chargementBinairetEmrunts(void)
@@ -1077,15 +1077,6 @@ ListeEmprunt chargementBinairetEmrunts(void)
 	return le;
 }
 
-void freeListeEmprunt(ListeEmprunt le)
-{
-	if(le == NULL)
-	{
-		return;
-	}
-	free(le);
-	freeListeEmprunt(le->suivant);
-}
 
 
 
@@ -1137,16 +1128,6 @@ Reservation lireReservation(FILE *flot)
 	fscanf(flot, "%s%s%s", r.idReservation, r.idAdherent, r.idJeu);
 	r.dateReservation=lireDate(flot);
 	return r;
-}
-
-void freeListeReservation(ListeReservation lr)
-{
-	if(lr == NULL)
-	{
-		return;
-	}
-	free(lr);
-	freeListeReservation(lr->suivant);
 }
 
 Reservation creationReservation(char idJeu[20], char idAdherent[20],Date dateReservation)
@@ -1240,6 +1221,7 @@ void sauvegardeBinaireReservation(ListeReservation lr)
 	while(!(lr == NULL))
 	{
 		fwrite(lr, sizeof(Reservation), 1, flot);
+		free(lr);
 		lr=lr->suivant;
 	}
 	fclose(flot);
@@ -1622,10 +1604,10 @@ void menuGlobal(void) // MODIF
 		choix=choixMenuGlobal();
 
 	}
-	//sauvegardeTAdherentBinaire(tAdherent, nbAdherent);
-	//sauvegardeTjeuxBinaire(tJeux, nbJeux);
-	//sauvegardeBinaireReservation(lr);
-	//sauvegardeBinaireEmprunts(le);	
+	sauvegardeTAdherentBinaire(tAdherent, nbAdherent);
+	sauvegardeTjeuxBinaire(tJeux, nbJeux);
+	sauvegardeBinaireReservation(lr);
+	sauvegardeBinaireEmprunts(le);
 }
 
 

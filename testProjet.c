@@ -123,6 +123,7 @@ void testChercherAdherent(void)
 }
 */
 
+
 //------------------------------------
 
 int main(void)
