@@ -1630,7 +1630,7 @@ void menuGlobal(void) // MODIF
 		choix=choixMenuGlobal();
 
 	}
-	sauvegardeTAdherentBinaire(tAdherent, nbAdherent);
+	//sauvegardeTAdherentBinaire(tAdherent, nbAdherent);
 	//sauvegardeTjeuxBinaire(tJeux, nbJeux);
 	//sauvegardeBinaireReservation(lr);
 	//sauvegardeBinaireEmprunts(le);
