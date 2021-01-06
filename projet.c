@@ -108,7 +108,7 @@ Jeux** chargerJeux(char* fileName, Jeux* tJeux[], int *nbJeux) // Loading the ga
 	flot=fopen(fileName,"r");
 	if (flot==NULL)
 	{
-		printf("Error : File %s can't be opened !\n",fileName);
+		printf("\n\tErreur : le fichier %s ne peut pas etre ouvert !\n",fileName);
 		return NULL;
 	}
 	fscanf(flot,"%d%*c", nbJeux);
@@ -120,7 +120,7 @@ Jeux** chargerJeux(char* fileName, Jeux* tJeux[], int *nbJeux) // Loading the ga
 		tJeux[i]=(Jeux*) malloc(sizeof(Jeux));
 		if (tJeux[i]==NULL)
 		{
-			printf("Error : problem during allocation !\n");
+			printf("\n\tErreur : Problème durant l'allocation mémoire !\n");
 			fclose(flot);
 			return NULL;
 		}
@@ -141,7 +141,7 @@ int tailleTableau(char nomFichier[20])
 	flot = fopen(nomFichier,"r");
 	if (flot == NULL)
 	{
-		printf("pb d'ouverture du fichier %s\n", nomFichier);
+		printf("\n\tErreur : le fichier %s ne peut pas etre ouvert\n", nomFichier);
 		return -1;
 	}
 	fscanf(flot, "%d%*c", &tailleTableau);
@@ -157,7 +157,7 @@ void chargementBinaireTJeux(Jeux **tJeux)
 	flot = fopen("jeux.bin","rb");
 	if (flot == NULL)
 	{
-		printf("pb d'ouverture du fichier binaire\n");
+		printf("\n\tErreur : le fichier binaire ne peut pas etre ouvert\n");
 		return;
 	}
 	fscanf(flot, "%d%*c", &nbJeux);
@@ -167,7 +167,7 @@ void chargementBinaireTJeux(Jeux **tJeux)
 		tJeux[i]=(Jeux *) malloc(sizeof(Jeux));
 		if (tJeux[i]==NULL)
 		{
-			printf("Problème durant l'allocation !\n");
+			printf("\n\tErreur : Problème durant l'allocation mémoire !\n");
 			fclose(flot);
 			return;
 		}
@@ -194,12 +194,15 @@ int supprimerJeux(Jeux* tJeux[], int nbJeux)
 {
 	int rang, i;
 	char idJeu[10];
-	printf("Please type the game ID you want to delete\n");
+	printf("\n\tSaisir l'ID du jeu à supprimer : ");
 	scanf("%s%*c", idJeu);
 	rang=chercherJeux(idJeu,tJeux,nbJeux);
 	
 	if (rang==-1)
+	{
+		printf("\n\tLe jeu n'existe pas !\n");
 		return nbJeux;
+	}
 	free(tJeux[rang]);
 	for (i = rang; i < nbJeux-1; i++)
 	{
@@ -215,9 +218,6 @@ int chercherJeux(char idJeu[], Jeux *tJeux[], int nbJeux)
 		{	
 			if(strcmp(idJeu, tJeux[i]->idJeu)==0)
 				return i;
-			
-			/*if(strcmp(idJeu, tJeux[i]->idJeu)<0)
-				return -1;*/
 		}
 		
 	return -1;
@@ -249,7 +249,7 @@ void affichageListeJeuxDisponibles(Jeux* tJeux[],int size,char type[]) 		// LIST
 				temp[j]=(Jeux *) malloc(sizeof(Jeux));
 				if (temp[j]==NULL)
 				{
-					printf("Erreur pendant l'allocation mémoire !\n");
+					printf("\n\tErreur pendant l'allocation mémoire !\n");
 					return ;
 				}
 				*temp[j]=*tJeux[i];
@@ -321,7 +321,7 @@ void retourJeux(Jeux *tJeux[],ListeEmprunt *le, ListeReservation *lr,int nbJeux,
 	Date d;
 	char idEmprunt[30],tempIdJeu[20];
 
-	printf("Voici la liste des  Emprunts :\n\n");
+	printf("\nVoici la liste des Emprunts : ");
 	AfficherListeEmprunt(*le, tAdherent, nbAdherent, tJeux, nbJeux);
 	printf("Saisir l'ID de votre emprunt : ");
 	scanf("%s",idEmprunt);
@@ -408,28 +408,28 @@ Jeux creerJeux(Jeux *tJeux[], int nbJeux,int *rang)
 	Jeux j;
 	
 	char idJeu[10], nomJeu[25], typeJeu[25];
-	printf("Saisir l'ID du jeu\n");
+	printf("\n\tSaisir l'ID du jeu : ");
 	scanf("%s%*c",j.idJeu);
 	minuscule(j.idJeu);
 	*rang=chercherJeux(j.idJeu,tJeux,nbJeux);
 	if(*rang!=-1)
 	{
-		printf("Le jeu existe déjà\n");
+		printf("\n\tLe jeu existe déjà\n");
 		
 	}
 	else
 	{	
-		printf("Saisir le nom du jeu\n");
+		printf("\n\tSaisir le nom du jeu : ");
 		fgets(j.nomJeu,25,stdin);
 		j.nomJeu[strlen(j.nomJeu)-1]='\0';
 		minuscule(j.nomJeu);
 
-		printf("Saisir le type du jeu (construction, plateau, tuile, carte, logique)\n");
+		printf("\n\tSaisir le type du jeu (construction, plateau, tuile, carte, logique) : ");
 		scanf("%s%*c",j.typeJeu);
 		minuscule(j.typeJeu);
 		while((strcmp(j.typeJeu,"construction")!=0)&&(strcmp(j.typeJeu,"plateau")!=0)&&(strcmp(j.typeJeu,"tuile")!=0)&&(strcmp(j.typeJeu,"carte")!=0)&&(strcmp(j.typeJeu,"logique")!=0))
 		{
-			printf("\n\tErreur, veuillez saisir correctement le type (construction, plateau, tuile, carte, logique)\n");
+			printf("\n\tErreur, veuillez saisir correctement le type (construction, plateau, tuile, carte, logique) : ");
 			scanf("%s%*c",j.typeJeu);
 		}
 		printf("\n\tSaisir le nombre d'exemplaire :");
@@ -465,7 +465,7 @@ void sauvegardeTjeuxBinaire(Jeux *tJeux[], int nbJeux)
 	flot=fopen("jeux.bin", "wb");
 	if(flot == NULL)
 	{
-		printf("pb d'ouveture de fichier de sauvegarde\n");
+		printf("\n\tProbleme d'ouverture du fichier binaire\n");
 		return;
 	}
 	fprintf(flot, "%d\n", nbJeux);
@@ -530,7 +530,7 @@ void chargerAdherents(char* fileName, Adherent* tAdherent[]) // Loading the adhe
 	flot=fopen(fileName,"r");
 	if (flot==NULL)
 	{
-		printf("Error : File %s can't be opened !\n",fileName);
+		printf("\n\tErreur : le fichier %s ne peut pas etre ouvert !\n",fileName);
 		return;
 	}
 	fscanf(flot,"%d%*c", &nbAdherent);
@@ -540,7 +540,7 @@ void chargerAdherents(char* fileName, Adherent* tAdherent[]) // Loading the adhe
 		tAdherent[i]=(Adherent *) malloc(sizeof(Adherent));
 		if (tAdherent[i]==NULL)
 		{
-			printf("Error : problem during allocation !\n");
+			printf("\n\tErreur : probleme durant l'allocation mémoire !\n");
 			fclose(flot);
 			return;
 		}
@@ -607,32 +607,33 @@ Adherent creerAdherent(Adherent *tAdherent[],int nbAdherent, int *chercherAdh)
 	char monsieur[3]="mr";
 	char madame[4]="mme";
 	char nom[15],prenom[15];
-	printf("Saisir votre nom\n");
+	printf("\n\tSaisir votre nom : ");
 	//fgets(a.nomAdherent,20,stdin);
 	//a.nomAdherent[strlen(a.nomAdherent)-1]='\0';
 	scanf("%s%*c", a.nomAdherent);
 	strcpy(nom,a.nomAdherent);
 	minuscule(nom);
-	printf("Saisir votre prénom\n");
+	printf("\n\tSaisir votre prénom : ");
 	fgets(a.prenomAdherent,20,stdin);
 	a.prenomAdherent[strlen(a.prenomAdherent)-1]='\0';
 	strcpy(prenom,a.prenomAdherent);
 	minuscule(prenom);
 	creerNomUtil(prenom,nom,6,2,a.idAdherent);
 	*chercherAdh=chercherAdherent(a.idAdherent,tAdherent,nbAdherent);
-	printf("%d\n",*chercherAdh);
 	if(*chercherAdh!=-1)
 	{
-		printf("L'adherent existe déjà\n");
+		printf("\n\tL'adherent existe déjà\n");
+		return a;
 	}
 	else
 	{	
-		printf("Saisir votre genre (Mme/Mr)\n");
+		printf("\n\tVoici votre ID : %s\n", a.idAdherent);
+		printf("\n\tSaisir votre genre (Mme/Mr) : ");
 		scanf("%s%*c",a.civilite);
 		minuscule(a.civilite);
 		while((strcmp(a.civilite,monsieur)!=0) && strcmp(a.civilite,madame)!=0)
 		{	
-			printf("Erreur, veuillez saisir correctement votre genre (Mme/Mr)\n");
+			printf("\n\tErreur, veuillez saisir correctement votre genre (Mme/Mr) : 5");
 			scanf("%s%*c", a.civilite);
 			printf("%s\n",a.civilite);
 		}
@@ -664,12 +665,15 @@ int supprimerAdherent(Adherent *tAdherent[], int nbAdherent)
 {
 	int rang, i;
 	char idAdherent[20];
-	printf("Please type the user ID you want to delete\n");
+	printf("\n\tSaisir l'ID de l'adherent à supprimer : ");
 	scanf("%s%*c", idAdherent);
 	rang=chercherAdherent(idAdherent,tAdherent,nbAdherent);
 	
 	if (rang==-1)
+	{
+		printf("\n\tL'adherent n'existe pas !\n");
 		return nbAdherent;
+	}
 	free(tAdherent[rang]);
 	for (i = rang; i < nbAdherent-1; i++)
 	{
@@ -687,7 +691,7 @@ void sauvegardeNormaleAdherent(Adherent *tAdherent[], int nbAdherent)
     flot = fopen("adherentsav.don", "w");
     if (flot == NULL)
     {
-        printf("probléme d'ouveture\n");
+        printf("\n\tErreur : probleme d'ouverture du fichier !\n");
     }
     fprintf(flot, "%d\n", nbAdherent);
     for (i=0; i<nbAdherent; i=i+1)
@@ -761,7 +765,7 @@ void sauvegardeTAdherentBinaire(Adherent *tAdherents[], int nbAdherents)
 	flot=fopen("adherents.bin", "wb");
 	if(flot == NULL)
 	{
-		printf("pb d'ouveture de fichier de sauvegarde\n");
+		printf("\n\tErreur : Problème d'ouverture du fichier binaire\n");
 		return;
 	}
 	fprintf(flot, "%d\n", nbAdherents);
@@ -785,7 +789,7 @@ void chargementBinaireTAdherents(Adherent **tAdherent)
 	flot = fopen("adherents.bin","rb");
 	if (flot == NULL)
 	{
-		printf("pb d'ouverture du fichier binaire\n");
+		printf("\n\tErreur : Problème d'ouverture du fichier binaire\n");
 		return;
 	}
 	fscanf(flot, "%d%*c", &nbAdherent);
@@ -795,7 +799,7 @@ void chargementBinaireTAdherents(Adherent **tAdherent)
 		tAdherent[i]=(Adherent *) malloc(sizeof(Adherent));
 		if (tAdherent[i]==NULL)
 		{
-			printf("Error : problem during allocation !\n");
+			printf("\n\tErreur : Problème durant l'allocation mémoire !\n");
 			fclose(flot);
 			return;
 		}
@@ -821,7 +825,7 @@ ListeEmprunt chargerListeEmprunt(char* fileName,ListeEmprunt le)
 	flot=fopen(fileName,"r");
 	if (flot==NULL)
 	{
-		printf("Error : File %s can't be opened !\n",fileName);
+		printf("\n\tErreur: le fichier %s ne peut pas etre ouvert !\n",fileName);
 		exit(1);
 	}
 	le=empruntvide();
@@ -1051,7 +1055,8 @@ void faireUnEmpruntouUneReservation(ListeEmprunt le, ListeReservation lr, Jeux* 
 		nbEmp=CompteEmprunt(le, e, nbEmp);
 		if (nbEmp > 3)
 		{
-			printf("Cet Adherent a déjà 3 emprunts en cours\n");
+			printf("\n\tCet Adherent a déjà 3 emprunts en cours\n");
+			return;
 		}
 		e=creationEmprunt(idJeu,idAdherent,date);
 		affichageDate(e.dateEmprunt);
@@ -1081,7 +1086,7 @@ void sauvegardeBinaireEmprunts(ListeEmprunt le)
 	flot=fopen("emprunts.bin", "wb");
 	if(flot == NULL)
 	{
-		printf("pb d'ouveture de fichier de sauvegarde\n");
+		printf("\n\tErreur : probleme d'ouverture du fichier binaire !\n");
 		return;
 	}
 	while(!(le == NULL))
@@ -1101,7 +1106,7 @@ ListeEmprunt chargementBinairetEmrunts(void)
 	flot = fopen("emprunts.bin","rb");
 	if (flot == NULL)
 	{
-		printf("pb d'ouverture du fichier binaire\n");
+		printf("\n\tErreur : probleme d'ouverture du fichier binaire !\n");
 		return NULL;
 	}
 	le=empruntvide();
@@ -1268,7 +1273,7 @@ void sauvegardeBinaireReservation(ListeReservation lr)
 	flot=fopen("reservations.bin", "wb");
 	if(flot == NULL)
 	{
-		printf("pb d'ouveture de fichier de sauvegarde\n");
+		printf("\n\tErreur : probleme d'ouverture du fichier binaire !\n");
 		return;
 	}
 	while(!(lr == NULL))
@@ -1288,7 +1293,7 @@ ListeReservation chargementBinairetReservations(void)
 	flot = fopen("reservations.bin","rb");
 	if (flot == NULL)
 	{
-		printf("pb d'ouverture du fichier binaire\n");
+		printf("\n\tErreur : probleme d'ouverture du fichier binaire !\n");
 		return NULL;
 	}
 	lr=reservationVide();
@@ -1372,14 +1377,12 @@ void afficherMenuType(void)
 int choixMenuType(void)
 {
 	int choix;
-	//system("clear");
 	afficherMenuType();
 	printf("\n\tVotre choix : ");
 	scanf("%d", &choix);
 	
 	while(choix<1 || choix>6)
 	{
-		//system("clear");
 		afficherMenuType();
 		printf("\n\tErreur ! Veuillez saisir un choix valide : ");
 		scanf("%d", &choix);
@@ -1443,14 +1446,12 @@ void afficherSousMenuAdmin(void)
 int choixSousMenuAdmin(void)
 {
 	int choix;
-	//system("clear");
 	afficherSousMenuAdmin();
 	printf("\n\tVotre choix : ");
 	scanf("%d%*c", &choix);
 	
 	while(choix<1 || choix>5)
 	{
-		//system("clear");
 		afficherSousMenuAdmin();
 		printf("\n\tErreur ! Veuillez saisir un choix valide : ");
 		scanf("%d%*c", &choix);
@@ -1466,14 +1467,12 @@ int choixSousMenuAdmin(void)
 int choixSousMenuJeux(void)
 {
 	int choix;
-	//system("clear");
 	afficherSousMenuJeux();
 	printf("\n\tVotre choix : ");
 	scanf("%d%*c", &choix);
 	
 	while(choix<1 || choix>3)
 	{
-		//system("clear");
 		afficherSousMenuJeux();
 		printf("\n\tErreur ! Veuillez saisir un choix valide : ");
 		scanf("%d%*c", &choix);
@@ -1538,31 +1537,45 @@ void menuGlobal(void) // MODIF
 	{
 		if (choix==1)
 		{
+			system("clear");
 			choixSousMenu=choixSousMenuJeux();//reaffiche sous menu jeux - choisir/lire - reaffiche/demande de reecrire - return choix 
 			while(choixSousMenu!=3)//entrée dans le sous menu
 			{
-			
+				system("clear");
 				if (choixSousMenu==1)
 				{
-				
+					
 					choixType=choixMenuType();//affiche menu type - choisir/lire - reaffiche demande reecrire - return choix
 					while(choixType!=6)
 					{
 						if (choixType==1)
 						{
+							system("clear");
 							affichageListeJeuxDisponibles(tJeux,nbJeux, "construction" );
 						}
 						if(choixType==2)
+						{
+							system("clear");
 							affichageListeJeuxDisponibles(tJeux, nbJeux, "plateau" );
+						}
 					
 						if (choixType==3)
+						{
+							system("clear");
 							affichageListeJeuxDisponibles(tJeux, nbJeux, "tuile");
+						}
 						
 						if(choixType==4)
+						{
+							system("clear");
 							affichageListeJeuxDisponibles(tJeux, nbJeux, "carte");
+						}
 						
 						if (choixType==5)
+						{
+							system("clear");
 							affichageListeJeuxDisponibles(tJeux, nbJeux, "logique");
+						}
 						
 						choixType=choixMenuType();
 					}	
@@ -1570,6 +1583,7 @@ void menuGlobal(void) // MODIF
 			
 				if(choixSousMenu==2)
 				{
+				system("clear");
 				printf("%d\n", nbJeux);
 				affichageTousJeux(tJeux, nbJeux);			
 				}
@@ -1578,10 +1592,12 @@ void menuGlobal(void) // MODIF
 		}//sortie du sous menu
 		if(choix==2)
 		{
+			system("clear");
 			faireUnEmpruntouUneReservation(le, lr, tJeux, tAdherent, nbJeux, nbAdherent);
 		}
 		if (choix==3)
 			{
+				system("clear");
 				printf("Saisir l'id de la reservations\n");
 				scanf("%s", r.idReservation);
 				retourRechercheRes=rechercheReservationBis(lr, r);
@@ -1597,28 +1613,33 @@ void menuGlobal(void) // MODIF
 			}	
 		if(choix==4)
 		{
+			system("clear");
 			AfficherListeEmprunt(le, tAdherent, nbAdherent, tJeux, nbJeux);
 			printf("\n\nTapez sur la touche entrée pour revenir au menu ..\n");				
 			c=getchar();
 		}	
 		if(choix==5)
 		{
+			system("clear");
 			afficherListeReservation(lr, tAdherent, nbAdherent, tJeux, nbJeux);
 			printf("\n\nTapez sur la touche entrée pour revenir au menu ..\n");				
 			c=getchar();
 		}	
 		if(choix == 6)
 		{
+			system("clear");
 			retourJeux(tJeux, &le, &lr, nbJeux, tAdherent, nbAdherent);
 		}
 		if (choix==7)
 		{
+			system("clear");
 			choixSousMenuA=choixSousMenuAdmin();//reaffiche sous menu jeux - choisir/lire - reaffiche/demande de reecrire - return choix 
 			while(choixSousMenuA!=5)//entrée dans le sous menu
 			{
-			
+				system("clear");
 				if (choixSousMenuA==1)
 				{
+					system("clear");
 					temptJeux= realloc  (tJeux, (nbJeux+1)*sizeof(Jeux));
 					if (temptJeux==NULL)
 					{
@@ -1635,10 +1656,12 @@ void menuGlobal(void) // MODIF
 				}
 				if(choixSousMenuA==2)
 				{
+					system("clear");
 					nbJeux=supprimerJeux(tJeux, nbJeux);	
 				}
 				if(choixSousMenuA==3)
 				{
+					system("clear");
 					a=creerAdherent(tAdherent, nbAdherent, &chercherAdh);
 					if (chercherAdh!=1)
 					{
@@ -1661,24 +1684,11 @@ void menuGlobal(void) // MODIF
 						*tAdherent[nbAdherent-1]=a;
 						triAdherent(tAdherent, nbAdherent);
 					}
-					for (i = 0; i < nbAdherent; i++)
-					{
-						printf("%s\t",tAdherent[i]->idAdherent);
-						affichageDate(tAdherent[i]->dateInscription);
-						printf("\t%s\t%s %s",tAdherent[i]->civilite,tAdherent[i]->nomAdherent,tAdherent[i]->prenomAdherent);
-						printf("\n");
-					}
 				}
 				if(choixSousMenuA==4)
 				{
-						nbAdherent=supprimerAdherent(tAdherent, nbAdherent);
-						for (i = 0; i < nbAdherent; i++)
-					{
-						printf("%s\t",tAdherent[i]->idAdherent);
-						affichageDate(tAdherent[i]->dateInscription);
-						printf("\t%s\t%s %s",tAdherent[i]->civilite,tAdherent[i]->nomAdherent,tAdherent[i]->prenomAdherent);
-						printf("\n");
-					}	
+					system("clear");
+					nbAdherent=supprimerAdherent(tAdherent, nbAdherent);
 				}
 				choixSousMenuA=choixSousMenuAdmin();
 			}	
@@ -1696,7 +1706,7 @@ void menuGlobal(void) // MODIF
 
 void afficheMenuGlobal(void)
 {
-	//system("clear");
+	system("clear");
 
 	printf("\t____________________________________________________________________\n");
 	printf("\t\n");
