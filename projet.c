@@ -112,7 +112,7 @@ Jeux** chargerJeux(char* fileName, Jeux* tJeux[], int *nbJeux) // Loading the ga
 		return NULL;
 	}
 	fscanf(flot,"%d%*c", nbJeux);
-	tJeux=malloc(*nbJeux*sizeof(Jeux));
+	//tJeux=malloc(*nbJeux*sizeof(Jeux));
 	j=lireJeu(flot);
 	for (i = 0; i < *nbJeux; i++)
 	{
@@ -134,40 +134,47 @@ Jeux** chargerJeux(char* fileName, Jeux* tJeux[], int *nbJeux) // Loading the ga
 	return tJeux;
 }
 
-Jeux** chargementBinaireTJeux(Jeux **tJeux, int *nbJeux)
+int tailleTableau(char nomFichier[20])
 {
-	int i;
+	int tailleTableau;
+	FILE *flot;
+	flot = fopen(nomFichier,"r");
+	if (flot == NULL)
+	{
+		printf("pb d'ouverture du fichier %s\n", nomFichier);
+		return -1;
+	}
+	fscanf(flot, "%d%*c", &tailleTableau);
+	fclose (flot);
+	return tailleTableau;
+}
+
+void chargementBinaireTJeux(Jeux **tJeux)
+{
+	int i, nbJeux;
 	Jeux j;
 	FILE *flot;
 	flot = fopen("jeux.bin","rb");
 	if (flot == NULL)
 	{
 		printf("pb d'ouverture du fichier binaire\n");
-		return NULL;
+		return;
 	}
-	fscanf(flot, "%d%*c", nbJeux);
-	printf("%d\n", *nbJeux);
-	tJeux=malloc (*nbJeux*sizeof(Jeux));
-	if(tJeux == NULL)
-	{
-		printf("Problème sur malloc\n");
-		return NULL;
-	}	
+	fscanf(flot, "%d%*c", &nbJeux);
 	fread(&j, sizeof(Jeux), 1, flot);
-	for (i=0; i<*nbJeux; i++)
+	for (i=0; i<nbJeux; i++)
 	{
 		tJeux[i]=(Jeux *) malloc(sizeof(Jeux));
 		if (tJeux[i]==NULL)
 		{
 			printf("Problème durant l'allocation !\n");
 			fclose(flot);
-			return NULL;
+			return;
 		}
 		*tJeux[i]=j;
 		fread(&j, sizeof(Jeux), 1, flot);
 	}
 	fclose (flot);
-	return tJeux;
 }
 
 Jeux lireJeu(FILE *flot)
@@ -342,7 +349,6 @@ void retourJeux(Jeux *tJeux[],ListeEmprunt *le, ListeReservation *lr,int nbJeux,
 	}	
 }
 
-
 int ajouterJeux(Jeux *tJeux[], int nbJeux)
 {
 	Jeux j;
@@ -350,14 +356,51 @@ int ajouterJeux(Jeux *tJeux[], int nbJeux)
 	j=creerJeux(tJeux,nbJeux,&rang);
 	if(rang==-1)
 	{	
+		/*
 		for (i = nbJeux-1; i > rang; i--)
 		{
 			tJeux[i+1]=tJeux[i];
-		}
+		}*/
+		*tJeux[nbJeux]=j;
 		return nbJeux+1;
 	}
 	return nbJeux;	
 }
+
+/*
+int ajouterJeuxBis(Jeux **tJeux[], int nbJeux)
+{
+	Jeux j , **temptJeux;
+	int i,rang;
+	j=creerJeux(*tJeux,nbJeux,&rang);
+	if(rang==-1)
+	{	
+		nbJeux=nbJeux+1;
+		temptJeux= realloc  (*tJeux, nbJeux*sizeof(Jeux));
+		if (temptJeux==NULL)
+		{
+			printf("Probléme sur realloc.\n");
+			return -1;
+		}
+
+		*tJeux=temptJeux;
+		testreal(*tJeux, rang, nbJeux, j);
+		return nbJeux;
+	}
+	return nbJeux;	
+}*/
+/*
+void insertionJeu(Jeux **tJeux, int rang, int nbJeux, Jeux j)
+{
+	int i;
+	tJeux[nbJeux-1]=(Jeux *) malloc(sizeof(Jeux));
+	if (tJeux[nbJeux-1]==NULL)
+	{
+		printf("Erreur durant l'allocation!\n");
+		return;
+	}
+	*tJeux[nbJeux-1]=j;
+}*/
 
 Jeux creerJeux(Jeux *tJeux[], int nbJeux,int *rang)
 {
@@ -476,10 +519,11 @@ Jeux** restaureTJeux(Jeux *tJeux[], int *nbJeux)
 
 
 
-Adherent** chargerAdherents(char* fileName, Adherent* tAdherent[], int *nbAdherent) // Loading the adherent's file
+void chargerAdherents(char* fileName, Adherent* tAdherent[]) // Loading the adherent's file
 
 {
 	FILE *flot;
+	int nbAdherent;
 	Adherent a;
 	int i;
 
@@ -487,26 +531,24 @@ Adherent** chargerAdherents(char* fileName, Adherent* tAdherent[], int *nbAdhere
 	if (flot==NULL)
 	{
 		printf("Error : File %s can't be opened !\n",fileName);
-		return NULL;
+		return;
 	}
-	fscanf(flot,"%d%*c", nbAdherent);
-	tAdherent=malloc (*nbAdherent*sizeof(Adherent));
+	fscanf(flot,"%d%*c", &nbAdherent);
 	a=lireAdherent(flot);
-	for(i=0; i <  *nbAdherent ; i++)
+	for(i=0; i <  nbAdherent ; i++)
 	{
 		tAdherent[i]=(Adherent *) malloc(sizeof(Adherent));
 		if (tAdherent[i]==NULL)
 		{
 			printf("Error : problem during allocation !\n");
 			fclose(flot);
-			return NULL;
+			return;
 		}
 		*tAdherent[i]=a;
 		a=lireAdherent(flot);
 
 	}
 	fclose(flot);
-	return tAdherent;
 }
 
 void triAdherent(Adherent *TempAdherent[],int size)
@@ -735,39 +777,32 @@ void sauvegardeTAdherentBinaire(Adherent *tAdherents[], int nbAdherents)
 	free (tAdherents);
 }
 
-Adherent** chargementBinaireTAdherents(Adherent **tAdherent, int*nbAdherent)
+void chargementBinaireTAdherents(Adherent **tAdherent)
 {
-	int i;
+	int i, nbAdherent;
 	Adherent a;
 	FILE *flot;
 	flot = fopen("adherents.bin","rb");
 	if (flot == NULL)
 	{
 		printf("pb d'ouverture du fichier binaire\n");
-		return NULL;
+		return;
 	}
-	fscanf(flot, "%d%*c", nbAdherent);
-	tAdherent=malloc (*nbAdherent*sizeof(Adherent));
-	if(tAdherent == NULL)
-	{
-		printf("Problème sur malloc\n");
-		return NULL;
-	}
+	fscanf(flot, "%d%*c", &nbAdherent);
 	fread(&a, sizeof(Adherent), 1, flot);
-	for (i=0; i<*nbAdherent; i++)
+	for (i=0; i<nbAdherent; i++)
 	{
 		tAdherent[i]=(Adherent *) malloc(sizeof(Adherent));
 		if (tAdherent[i]==NULL)
 		{
 			printf("Error : problem during allocation !\n");
 			fclose(flot);
-			return NULL;
+			return;
 		}
 		*tAdherent[i]=a;
 		fread(&a, sizeof(Adherent), 1, flot);
 	}
 	fclose (flot);
-	return tAdherent;
 }
 
 
@@ -1285,10 +1320,6 @@ ListeReservation supprimerUneReservation(ListeReservation lr, Reservation r)
 	{
 		return supprimerEnTeteUneReservation(lr);
 	}
-	/*if(strcmp(lr->res.idReservation, r.idReservation) > 0)
-	{
-		return lr;
-	}*/
 	lr->suivant=supprimerUneReservation(lr->suivant, r);
 	return lr;
 }
@@ -1459,8 +1490,8 @@ int choixSousMenuJeux(void)
 void menuGlobal(void) // MODIF
 {
 	int choix, choixSousMenu, choixType, j, i, choixSousMenuA, chercherAdh;
-	Jeux **tJeux;
-	Adherent **tAdherent, a;
+	Jeux **tJeux, **temptJeux;
+	Adherent **tAdherent, a, **temptAdherent;
 	ListeEmprunt le;
 	ListeReservation lr;
 	Reservation r;
@@ -1468,27 +1499,33 @@ void menuGlobal(void) // MODIF
 	char c, idEmprunt[30];
 	
 	//chargement des fichiers 
+	nbJeux=tailleTableau("jeux.bin");//pour le chargement binaire
+	//nbJeux=tailleTableau("jeux.don");//pour le chargement classique
+	tJeux=malloc (nbJeux*sizeof(Jeux));
+	if(tJeux == NULL)
+	{
+		printf("Problème sur malloc\n");
+		return;
+	}
+	//tJeux=chargerJeux("jeux.don",tJeux);
+	chargementBinaireTJeux(tJeux);
 
-	//tJeux=chargerJeux("jeux.don",tJeux, &nbJeux);
-	tJeux=chargementBinaireTJeux(tJeux, &nbJeux);
-	if (nbJeux==-1)
-	{
-		return;
-	}
-	//restaureJeux
-	//tAdherent=chargerAdherents("adherents.don",tAdherent, &nbAdherent);
-	tAdherent=chargementBinaireTAdherents(tAdherent, &nbAdherent);
+	nbAdherent=tailleTableau("adherents.bin");
+	//nbJeux=tailleTableau("adherents.don");
 	if (nbAdherent==-1)
 	{
 		return;
 	}
+	tAdherent=malloc (nbAdherent*sizeof(Adherent));
+	if(tAdherent == NULL)
+	{
+		printf("Problème sur malloc\n");
+		return;
+	}
+	//chargerAdherents("adherents.don",tAdherent);
+	chargementBinaireTAdherents(tAdherent);
 	triAdherent(tAdherent, nbAdherent);
-	if (nbAdherent==-1)
-	{
-		return;
-	}
-	
-	//restaureAhderent
+
 	//le=chargerListeEmprunt("emprunts2.don", le);
 	le=chargementBinairetEmrunts();
 	//lr=CreationDeLaListe(lr);
@@ -1582,7 +1619,18 @@ void menuGlobal(void) // MODIF
 			
 				if (choixSousMenuA==1)
 				{
+					temptJeux= realloc  (tJeux, (nbJeux+1)*sizeof(Jeux));
+					if (temptJeux==NULL)
+					{
+						printf("Probléme sur realloc.\n");
+						return;
+					}
+					tJeux=temptJeux;
+					tJeux[nbJeux]=(Jeux *) malloc(sizeof(Jeux));
 					nbJeux=ajouterJeux(tJeux, nbJeux);
+					printf("%d\n", nbJeux);
+					//nbJeux=ajouterJeuxBis(&tJeux, nbJeux);
+					//printf("%d\n", &tJeux);
 					
 				}
 				if(choixSousMenuA==2)
@@ -1594,14 +1642,23 @@ void menuGlobal(void) // MODIF
 					a=creerAdherent(tAdherent, nbAdherent, &chercherAdh);
 					if (chercherAdh!=1)
 					{
-						tAdherent[nbAdherent]=(Adherent *) malloc(sizeof(Adherent));
+						
+						nbAdherent=nbAdherent+1;
+						temptAdherent= realloc  (tAdherent, nbAdherent*sizeof(Adherent));
+						if (temptAdherent==NULL)
+						{
+							printf("Probléme sur realloc.\n");
+							return;
+						}
+						
+						tAdherent=temptAdherent;
+						tAdherent[nbAdherent-1]=(Adherent *) malloc(sizeof(Adherent));
 						if (tAdherent[nbAdherent]==NULL)
 						{
 							printf("Erreur durant l'allocation!\n");
 							return;
 						}
-						*tAdherent[nbAdherent]=a;
-						nbAdherent=nbAdherent+1;
+						*tAdherent[nbAdherent-1]=a;
 						triAdherent(tAdherent, nbAdherent);
 					}
 					for (i = 0; i < nbAdherent; i++)
