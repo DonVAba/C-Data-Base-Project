@@ -98,23 +98,23 @@ int plusRecenteDate(Date d1,Date d2)
 
 
 
-Jeux** chargerJeux(char* fileName, Jeux* tJeux[], int *nbJeux) // Loading the game's file
+void chargerJeux(char* fileName, Jeux* tJeux[]) // Loading the game's file
 
 {
 	FILE *flot;
 	Jeux j;
-	int i;
+	int i, nbJeux;
 
 	flot=fopen(fileName,"r");
 	if (flot==NULL)
 	{
 		printf("\n\tErreur : le fichier %s ne peut pas etre ouvert !\n",fileName);
-		return NULL;
+		return;
 	}
-	fscanf(flot,"%d%*c", nbJeux);
+	fscanf(flot,"%d%*c", &nbJeux);
 	//tJeux=malloc(*nbJeux*sizeof(Jeux));
 	j=lireJeu(flot);
-	for (i = 0; i < *nbJeux; i++)
+	for (i = 0; i < nbJeux; i++)
 	{
 		
 		tJeux[i]=(Jeux*) malloc(sizeof(Jeux));
@@ -122,7 +122,7 @@ Jeux** chargerJeux(char* fileName, Jeux* tJeux[], int *nbJeux) // Loading the ga
 		{
 			printf("\n\tErreur : Problème durant l'allocation mémoire !\n");
 			fclose(flot);
-			return NULL;
+			return;
 		}
 		*tJeux[i]=j;
 		j=lireJeu(flot);
@@ -131,7 +131,6 @@ Jeux** chargerJeux(char* fileName, Jeux* tJeux[], int *nbJeux) // Loading the ga
 
 	}
 	fclose(flot);
-	return tJeux;
 }
 
 int tailleTableau(char nomFichier[20])
@@ -1239,6 +1238,36 @@ void afficherListeReservation(ListeReservation lr, Adherent *tAdherent[], int nb
 	afficherListeReservation(lr->suivant,tAdherent,nbAdherent,tJeux,nbJeux);
 }
 
+void afficherListeReservationPourUnJeuDonne(ListeReservation lr, Adherent *tAdherent[], int nbAdherent, Jeux* tJeux[], int nbJeux)
+{
+	int i, j, compteur=0;
+	char idJeu[20];
+	printf("Saisir l'id du jeu dont vous voulez voir les réservations :");
+	scanf("%s%*c", idJeu);
+	while (lr!=NULL)
+	{
+		if (strcmp(lr->res.idJeu, idJeu)==0)
+		{
+			i=chercherAdherent(lr->res.idAdherent,tAdherent,nbAdherent);
+			j=chercherJeux(lr->res.idJeu,tJeux,nbJeux);
+			printf("\n__________________________________________________\n\n");
+			printf("ID RESERVATION : %s\n",lr->res.idReservation);
+			printf("IDENTITÉ : %s\n",tAdherent[i]->nomAdherent);
+			printf("NOM DU JEU : %s\n",tJeux[j]->nomJeu);
+			printf("DATE RESERVATION : ");
+			affichageDate(lr->res.dateReservation);
+			printf("\n__________________________________________________");
+			printf("\n\n\n");
+			compteur++;
+		}		
+		lr=lr->suivant;
+	}
+	if (compteur==0)
+	{
+		printf("Pas de reservation pour ce jeu\n");
+	}
+}	
+
 int rechercheReservation(ListeReservation lr ,char idJeu[], Reservation *r)
 {
 	while (lr!=NULL)
@@ -1453,6 +1482,38 @@ void afficherSousMenuJeux(void)
 	printf("\t____________________________________________________________________\n");
 }
 
+int choixSousMenuReservation(void)
+{
+	int choix;
+	//system("clear");
+	afficherSousMenuReservation();
+	printf("\n\tVotre choix : ");
+	scanf("%d%*c", &choix);
+	
+	while(choix<1 || choix>3)
+	{
+		//system("clear");
+		afficherSousMenuReservation();
+		printf("\n\tErreur ! Veuillez saisir un choix valide : ");
+		scanf("%d%*c", &choix);
+
+		
+	}
+	return choix;
+}
+
+void afficherSousMenuReservation(void)
+{
+	printf("\t____________________________________________________________________\n");
+	printf("\t\n");
+	printf("\t\t1\t Afficher la liste des reservations pour un jeu donné\n");
+	printf("\t\t2\t Afficher la liste des reservations pour tous les jeux\n");
+	printf("\t\t3\t Retour\n");
+	printf("\t\t\t\n");
+	printf("\t____________________________________________________________________\n");
+}
+
+
 void afficherSousMenuAdmin(void)
 {
 	printf("\t____________________________________________________________________\n");
@@ -1511,7 +1572,7 @@ int choixSousMenuJeux(void)
 
 void menuGlobal(void) // MODIF
 {
-	int choix, choixSousMenu, choixType, j, i, choixSousMenuA, chercherAdh;
+	int choix, choixSousMenu, choixType, j, i, choixSousMenuA, chercherAdh, choixResa;
 	Jeux **tJeux, **temptJeux;
 	Adherent **tAdherent, a, **temptAdherent;
 	ListeEmprunt le;
@@ -1643,10 +1704,19 @@ void menuGlobal(void) // MODIF
 		}	
 		if(choix==5)
 		{
-			system("clear");
-			afficherListeReservation(lr, tAdherent, nbAdherent, tJeux, nbJeux);
-			printf("\n\nTapez sur la touche entrée pour revenir au menu ..\n");				
-			c=getchar();
+			if (choixResa==1)
+				{
+					afficherListeReservationPourUnJeuDonne(lr, tAdherent, nbAdherent, tJeux, nbJeux);
+					printf("\n\nTapez sur la touche entrée pour revenir au menu ..\n");				
+					c=getchar();
+				}
+				if(choixResa==2)
+				{
+					afficherListeReservation(lr, tAdherent, nbAdherent, tJeux, nbJeux);
+					printf("\n\nTapez sur la touche entrée pour revenir au menu ..\n");				
+					c=getchar();
+				}
+				choixResa=choixSousMenuReservation();
 		}	
 		if(choix == 6)
 		{
