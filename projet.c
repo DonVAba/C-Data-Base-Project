@@ -1092,7 +1092,6 @@ void sauvegardeBinaireEmprunts(ListeEmprunt le)
 	while(!(le == NULL))
 	{
 		fwrite(le, sizeof(Emprunt), 1, flot);
-		free(le);
 		le=le->suivant;
 	}
 	fclose(flot);
@@ -1279,7 +1278,6 @@ void sauvegardeBinaireReservation(ListeReservation lr)
 	while(!(lr == NULL))
 	{
 		fwrite(lr, sizeof(Reservation), 1, flot);
-		free(lr);
 		lr=lr->suivant;
 	}
 	fclose(flot);
@@ -1346,7 +1344,32 @@ ListeReservation rechercheReservation(ListeReservation lr,char idJeu[])
 
 					//chercher Réservation
 			
+void freeListeEmprunt(ListeEmprunt le)
+{
+	MaillonE *suiv;
+	suiv=(MaillonE*)malloc(sizeof(MaillonE));
+	while(le!=NULL)
+	{
+		suiv->suivant=le->suivant;
+		free(le);
+		le=suiv->suivant;
+	}
+	free(suiv);
+}
 
+void freeListeReservation(ListeReservation lr)
+{
+	MaillonR *suiv;
+	suiv=(MaillonR*)malloc(sizeof(MaillonR));
+	while(lr!=NULL)
+	{
+		suiv->suivant=lr->suivant;
+		free(lr);
+		lr=suiv->suivant;
+	}
+	free(suiv);
+	return;
+}
 
 
 //----------------------------- MENU -------------------------------------------	
@@ -1700,7 +1723,9 @@ void menuGlobal(void) // MODIF
 	//sauvegardeTAdherentBinaire(tAdherent, nbAdherent);
 	//sauvegardeTjeuxBinaire(tJeux, nbJeux);
 	//sauvegardeBinaireReservation(lr);
+
 	//sauvegardeBinaireEmprunts(le);
+
 }
 
 

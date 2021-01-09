@@ -72,7 +72,7 @@ int plusRecenteDate(Date d1,Date d2);
 
 //void insertionJeu(Jeux **tJeux, int rang, int nbJeux, Jeux j);
 //int ajouterJeuxBis(Jeux **tJeux[], int nbJeux);
-Jeux** chargerJeux(char* fileName, Jeux* tJeux[], int *nbJeux);
+void chargerJeux(char* fileName, Jeux* tJeux[]);
 int ajouterJeuxBis(Jeux **tJeux[], int nbJeux);
 void chargementBinaireTJeux(Jeux **tJeux);
 int tailleTableau(char nomFichier[20]);
@@ -144,6 +144,9 @@ ListeReservation supprimerEnTeteUneReservation(ListeReservation lr);
 ListeReservation supprimerUneReservation(ListeReservation lr, Reservation r);
 void freeListeReservation(ListeReservation lr);
 int rechercheReservation(ListeReservation lr ,char idJeu[], Reservation *r);
+int choixSousMenuReservation(void);
+void afficherSousMenuReservation(void);
+void afficherListeReservationPourUnJeuDonne(ListeReservation lr, Adherent *tAdherent[], int nbAdherent, Jeux* tJeux[], int nbJeux);
 
 void afficherMenuType(void);
 void MenuType(Jeux* tJeux[], int GameSize);
