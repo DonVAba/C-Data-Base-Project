@@ -225,10 +225,10 @@ int chercherJeux(char idJeu[], Jeux *tJeux[], int nbJeux)
 void affichageTousJeux(Jeux* tJeux[],int GameSize)
 {
 	int i;
-	printf("\t\tID\t\tCatég.\tExemplaires\t\tTitre\n\n");
+	printf("\t\tID\t\tCatég.\t\tExemplaires\t\tTitre\n\n");
 	for (i = 0; i < GameSize ; i++)
 	{
-		printf("\t\t%s\t\t%s\t%d\t\t\t%s\n",tJeux[i]->idJeu,tJeux[i]->typeJeu,tJeux[i]->nbExJeu,tJeux[i]->nomJeu);
+		printf("\t\t%s\t\t%s\t\t%d\t\t\t%s\n",tJeux[i]->idJeu,tJeux[i]->typeJeu,tJeux[i]->nbExJeu,tJeux[i]->nomJeu);
 	}
 }
 
@@ -607,8 +607,6 @@ Adherent creerAdherent(Adherent *tAdherent[],int nbAdherent, int *chercherAdh)
 	char madame[4]="mme";
 	char nom[15],prenom[15];
 	printf("\n\tSaisir votre nom : ");
-	//fgets(a.nomAdherent,20,stdin);
-	//a.nomAdherent[strlen(a.nomAdherent)-1]='\0';
 	scanf("%s%*c", a.nomAdherent);
 	strcpy(nom,a.nomAdherent);
 	minuscule(nom);
@@ -704,11 +702,13 @@ void sauvegardeNormaleAdherent(Adherent *tAdherent[], int nbAdherent)
 
 void creerNomUtil(char prenom[],char nom[],int n,int p,char IdUtil[])
 {
+	char prenomBis[30]={};
+	char nomBis[30]={};
 	supprimeBlanc(prenom,prenom);
 	supprimeBlanc(nom,nom);
-	partieGauche(prenom,prenom,p);
-	partieGauche(nom,nom,n);
-	strcpy(IdUtil,strcat(prenom,nom));
+	partieGauche(prenom,prenomBis,p);
+	partieGauche(nom,nomBis,n);
+	strcpy(IdUtil,strcat(prenomBis,nomBis));
 }
 
 int blanc(char c)
@@ -1051,13 +1051,14 @@ void faireUnEmpruntouUneReservation(ListeEmprunt le, ListeReservation lr, Jeux* 
 	}
 	else
 	{
+		e=creationEmprunt(idJeu,idAdherent,date);
 		nbEmp=CompteEmprunt(le, e, nbEmp);
-		if (nbEmp > 3)
+		if (nbEmp == 3)
 		{
 			printf("\n\tCet Adherent a déjà 3 emprunts en cours\n");
 			return;
 		}
-		e=creationEmprunt(idJeu,idAdherent,date);
+		printf("nbEmp :%d\n", nbEmp);
 		affichageDate(e.dateEmprunt);
 		printf("\n\n");
 		le=ajouterEmprunt(le,e);
@@ -1067,15 +1068,23 @@ void faireUnEmpruntouUneReservation(ListeEmprunt le, ListeReservation lr, Jeux* 
 
 int CompteEmprunt(ListeEmprunt le, Emprunt emp, int i)
 {
+	int cmp;
 	if(le==NULL)
 	{
 		return i;
 	}
+	cmp=strcmp(le->e.idAdherent, emp.idAdherent);
+	printf("%s\n", le->e.idAdherent);
+	printf("%s\n", emp.idAdherent);
+	printf(" :%d\n", cmp);
 	if(strcmp(le->e.idAdherent, emp.idAdherent)== 0)
 	{
 		i++;
+		printf("i :%d\n", i);
+
 	}
 	i=CompteEmprunt(le->suivant, emp, i);
+	return i;
 
 }
 
@@ -1431,13 +1440,13 @@ int choixMenuType(void)
 	int choix;
 	afficherMenuType();
 	printf("\n\tVotre choix : ");
-	scanf("%d", &choix);
+	scanf("%d%*c", &choix);
 	
 	while(choix<1 || choix>6)
 	{
 		afficherMenuType();
 		printf("\n\tErreur ! Veuillez saisir un choix valide : ");
-		scanf("%d", &choix);
+		scanf("%d%*c", &choix);
 		
 	}
 	return choix;
@@ -1621,11 +1630,11 @@ void menuGlobal(void) // MODIF
 	{
 		if (choix==1)
 		{
-			system("clear");
+			//system("clear");
 			choixSousMenu=choixSousMenuJeux();//reaffiche sous menu jeux - choisir/lire - reaffiche/demande de reecrire - return choix 
 			while(choixSousMenu!=3)//entrée dans le sous menu
 			{
-				system("clear");
+				//system("clear");
 				if (choixSousMenu==1)
 				{
 					
@@ -1634,30 +1643,30 @@ void menuGlobal(void) // MODIF
 					{
 						if (choixType==1)
 						{
-							system("clear");
+							//system("clear");
 							affichageListeJeuxDisponibles(tJeux,nbJeux, "construction" );
 						}
 						if(choixType==2)
 						{
-							system("clear");
+							//system("clear");
 							affichageListeJeuxDisponibles(tJeux, nbJeux, "plateau" );
 						}
 					
 						if (choixType==3)
 						{
-							system("clear");
+							//system("clear");
 							affichageListeJeuxDisponibles(tJeux, nbJeux, "tuile");
 						}
 						
 						if(choixType==4)
 						{
-							system("clear");
+							//system("clear");
 							affichageListeJeuxDisponibles(tJeux, nbJeux, "carte");
 						}
 						
 						if (choixType==5)
 						{
-							system("clear");
+							//system("clear");
 							affichageListeJeuxDisponibles(tJeux, nbJeux, "logique");
 						}
 						
@@ -1667,7 +1676,7 @@ void menuGlobal(void) // MODIF
 			
 				if(choixSousMenu==2)
 				{
-				system("clear");
+				//system("clear");
 				printf("%d\n", nbJeux);
 				affichageTousJeux(tJeux, nbJeux);			
 				}
@@ -1676,14 +1685,14 @@ void menuGlobal(void) // MODIF
 		}//sortie du sous menu
 		if(choix==2)
 		{
-			system("clear");
+			//system("clear");
 			faireUnEmpruntouUneReservation(le, lr, tJeux, tAdherent, nbJeux, nbAdherent);
 		}
 		if (choix==3)
 			{
-				system("clear");
+				//system("clear");
 				printf("Saisir l'id de la reservations\n");
-				scanf("%s", r.idReservation);
+				scanf("%s%*c", r.idReservation);
 				retourRechercheRes=rechercheReservationBis(lr, r);
 				if (retourRechercheRes==-1)
 				{
@@ -1697,14 +1706,17 @@ void menuGlobal(void) // MODIF
 			}	
 		if(choix==4)
 		{
-			system("clear");
+			//system("clear");
 			AfficherListeEmprunt(le, tAdherent, nbAdherent, tJeux, nbJeux);
 			printf("\n\nTapez sur la touche entrée pour revenir au menu ..\n");				
 			c=getchar();
 		}	
 		if(choix==5)
 		{
-			if (choixResa==1)
+			choixResa=choixSousMenuReservation();
+			while(choixResa!=3)
+			{
+				if (choixResa==1)
 				{
 					afficherListeReservationPourUnJeuDonne(lr, tAdherent, nbAdherent, tJeux, nbJeux);
 					printf("\n\nTapez sur la touche entrée pour revenir au menu ..\n");				
@@ -1717,22 +1729,24 @@ void menuGlobal(void) // MODIF
 					c=getchar();
 				}
 				choixResa=choixSousMenuReservation();
+			}
+			printf("\n");
 		}	
 		if(choix == 6)
 		{
-			system("clear");
+			//system("clear");
 			retourJeux(tJeux, &le, &lr, nbJeux, tAdherent, nbAdherent);
 		}
 		if (choix==7)
 		{
-			system("clear");
+			//system("clear");
 			choixSousMenuA=choixSousMenuAdmin();//reaffiche sous menu jeux - choisir/lire - reaffiche/demande de reecrire - return choix 
 			while(choixSousMenuA!=5)//entrée dans le sous menu
 			{
-				system("clear");
+				//system("clear");
 				if (choixSousMenuA==1)
 				{
-					system("clear");
+					//system("clear");
 					temptJeux= realloc  (tJeux, (nbJeux+1)*sizeof(Jeux));
 					if (temptJeux==NULL)
 					{
@@ -1749,12 +1763,12 @@ void menuGlobal(void) // MODIF
 				}
 				if(choixSousMenuA==2)
 				{
-					system("clear");
+					//system("clear");
 					nbJeux=supprimerJeux(tJeux, nbJeux);	
 				}
 				if(choixSousMenuA==3)
 				{
-					system("clear");
+					//system("clear");
 					a=creerAdherent(tAdherent, nbAdherent, &chercherAdh);
 					if (chercherAdh!=1)
 					{
@@ -1780,33 +1794,33 @@ void menuGlobal(void) // MODIF
 				}
 				if(choixSousMenuA==4)
 				{
-					system("clear");
+					//system("clear");
 					nbAdherent=supprimerAdherent(tAdherent, nbAdherent);
 				}
 				choixSousMenuA=choixSousMenuAdmin();
 			}	
-		}
-		//Appel de retour d'un jeu			
+		}			
 		choix=choixMenuGlobal();
 
 	}
 	//sauvegardeTAdherentBinaire(tAdherent, nbAdherent);
 	//sauvegardeTjeuxBinaire(tJeux, nbJeux);
 	//sauvegardeBinaireReservation(lr);
-
+	//freeListeReservation(lr);
 	//sauvegardeBinaireEmprunts(le);
+	//freeListeEmprunt(le);
 
 }
 
 
 void afficheMenuGlobal(void)
 {
-	system("clear");
+	//system("clear");
 
 	printf("\t____________________________________________________________________\n");
 	printf("\t\n");
 	printf("\t\t 1\tAffichage des jeux\n");//fonctionne
-	printf("\t\t 2\tEmprunter un jeux\n");
+	printf("\t\t 2\tEmprunter un jeux (ou le réserver)\n");
 	printf("\t\t 3\tAnnulation d'une réservation\n");
 	printf("\t\t 4\tAfficher les emprunts\n");
 	printf("\t\t 5\tAfficher les réservations\n");
