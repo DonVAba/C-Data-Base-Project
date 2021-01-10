@@ -30,28 +30,28 @@ Date ecrireDate(void)
 {
     Date d;
     printf("\n\tEcrire le jour(1-31)\n\t");
-    scanf("%d",&d.jour);
+    scanf("%d%*c",&d.jour);
     while (d.jour<1 || d.jour>31)
     {
     	printf("\n\tErreur, ecrire correctement le jour(1-31)\n");
-    	scanf("%d", &d.jour);
+    	scanf("%d%*c", &d.jour);
     }
 
 
     printf("\n\tEcrire le mois(1-12)\n\t");
-    scanf("%d", &d.mois);
+    scanf("%d%*c", &d.mois);
     while (d.mois<1 || d.mois>12)
     {
     	printf("\n\tErreur, ecrire correctement le mois(1-12)\n\t");
-    	scanf("%d", &d.mois);
+    	scanf("%d%*c", &d.mois);
     }
 
     printf("\n\tEcrire l'annee(2020-20XX)\n\t");
-    scanf("%d", &d.annee);
+    scanf("%d%*c", &d.annee);
     while (d.annee<2020)
     {
     	printf("\n\tErreur, ecrire correctement l'annee(2020-20XX)\n\t");
-    	scanf("%d", &d.annee);
+    	scanf("%d%*c", &d.annee);
     }
  
 	return d;
@@ -179,9 +179,9 @@ void chargementBinaireTJeux(Jeux **tJeux)
 Jeux lireJeu(FILE *flot)
 {
 	Jeux j;
-	fscanf(flot,"%s",j.idJeu);
-	fscanf(flot,"%s",j.typeJeu);
-	fscanf(flot,"%d",&j.nbExJeu);
+	fscanf(flot,"%s%*c",j.idJeu);
+	fscanf(flot,"%s%*c",j.typeJeu);
+	fscanf(flot,"%d%*c",&j.nbExJeu);
 	fgets(j.nomJeu,40,flot);
 	j.nomJeu[strlen(j.nomJeu)-1]='\0';
 	return j;
@@ -314,16 +314,16 @@ void permutation(Jeux *TempJ[],int i,int j)
 
 void retourJeux(Jeux *tJeux[],ListeEmprunt *le, ListeReservation *lr,int nbJeux, Adherent *tAdherent[], int nbAdherent) 
 {	
-	int i, retourRechEmp, retourRechRes;
+	int i, retourRechEmp, retourRechRes, compteur=0;
 	Reservation r;
 	Emprunt e;
 	Date d;
-	char idEmprunt[30],tempIdJeu[20];
+	char idEmprunt[30],tempIdJeu[20], temp[2];
 
 	printf("\nVoici la liste des Emprunts : ");
 	AfficherListeEmprunt(*le, tAdherent, nbAdherent, tJeux, nbJeux);
 	printf("Saisir l'ID de votre emprunt : ");
-	scanf("%s",idEmprunt);
+	scanf("%s%*c",idEmprunt);
 	retourRechEmp=chercherEmprunt(*le, idEmprunt, &e);
 	if (retourRechEmp==-1)
 	{
@@ -343,6 +343,12 @@ void retourJeux(Jeux *tJeux[],ListeEmprunt *le, ListeReservation *lr,int nbJeux,
 	{	
 		d=ecrireDate();
 		e=creationEmprunt(r.idJeu, r.idAdherent, d);
+		compteur=compteLesEmpruntsAvecLesMemesInfos(*le, e, compteur);
+		if (compteur>0)
+		{
+			sprintf(temp, "%d", compteur);
+			strcat(e.idEmprunt, temp);
+		}
 		*le=ajouterEmprunt(*le, e);
 		*lr=supprimerUneReservation(*lr, r);
 	}	
@@ -1003,34 +1009,43 @@ ListeEmprunt supprimerEnTeteEmprunt(ListeEmprunt le)
 }
 
 
-void faireUnEmpruntouUneReservation(ListeEmprunt le, ListeReservation lr, Jeux* tJeux[], Adherent* tAdherent[], int nbJeux, int nbAdherent)
+void faireUnEmpruntouUneReservation(ListeEmprunt le, ListeReservation lr, Jeux* tJeux[], Adherent* tAdherent[], int nbJeux, int *nbAdherent)
 {
-	int rangJ, rangA, nbEmp=0;
+	int rangJ, rangA, nbEmp=0, compteur=0, chercherAdh;
 	Emprunt e;
 	Reservation r;
 	Date date;
-	char idJeu[20], choix, idAdherent[20],idReservation[20];
+	Adherent a;
+	char idJeu[20], choix, idAdherent[20],idReservation[20], temp[2];
 
 	printf("\n\tSaisir votre ID d'adherent (les deux premieres lettres de votre prenom suivi des six premieres lettres de votre nom : ");
-	scanf("%s", idAdherent);
-	rangA=chercherAdherent(idAdherent, tAdherent, nbAdherent);
+	scanf("%s%*c", idAdherent);
+	rangA=chercherAdherent(idAdherent, tAdherent, *nbAdherent);
 	while(rangA==-1)
 	{
-		printf("L'adherent n'existe pas, retaper un ID valide, tapez 'exit' pour sortir\n");
-		scanf("%s", idAdherent);
+		printf("L'adherent n'existe pas, retaper un ID valide, tapez 'exit' pour sortir, tapez 'nouveau' pour savoir comment créer un nouvle adherent\n");
+		scanf("%s%*c", idAdherent);
 		if (strcmp(idAdherent,"exit")==0)
 			return;
-		rangA=chercherAdherent(idAdherent, tAdherent, nbAdherent);
+		if (strcmp(idAdherent,"nouveau")==0)
+		{
+			printf("Rendez-vous dans le sous-menu Administrateur à partir du menu principal pour créer un nouvel adherent\n");
+			printf("Tapez 'exit' pour retourner au menu principal.\n");
+			scanf("%s%*c", idAdherent);
+			if (strcmp(idAdherent,"exit")==0)
+				return;
+		}
+		rangA=chercherAdherent(idAdherent, tAdherent, *nbAdherent);
 	}
 	
 	printf("L'emprunt va etre réalisé pour l'adherent %s\n", idAdherent );
 	printf("\n\tSaisir l'ID du jeu que vous voulez emprunter : ");
-	scanf("%s", idJeu);
+	scanf("%s%*c", idJeu);
 	rangJ=chercherJeux(idJeu, tJeux, nbJeux);
 	while(rangJ==-1)
 	{
 		printf("\n\tLe jeu n'existe pas, retaper un ID valide, tapez 'exit' pour sortir : ");
-		scanf("%s", idJeu);
+		scanf("%s%*c", idJeu);
 		if (strcmp(idJeu,"exit")==0)
 			return;
 		rangJ=chercherJeux(idJeu,tJeux,nbJeux);
@@ -1041,49 +1056,70 @@ void faireUnEmpruntouUneReservation(ListeEmprunt le, ListeReservation lr, Jeux* 
 	if (tJeux[rangJ]->nbExJeu==0)
 	{
 		printf("\n\tLe jeu n'est pas disponible voulez vous le réserver ? (y/n)");
-		scanf("%c%*c", &choix);
+		scanf("%s%*c", &choix);
 		if (choix == 'n')
 			return;
-		printf("1\n");
+
 		r=creationReservation(idJeu, idAdherent, date);
-		printf("2\n");
+		compteur=compteLesReservationsAvecLesMemesInfos(lr, r, compteur);
+		if (compteur>0)
+		{
+			printf("test\n");
+			sprintf(temp, "%d", compteur);
+			strcat(r.idReservation, temp);
+		}
 		lr=ajouterReservation(lr, r);
 	}
 	else
 	{
 		e=creationEmprunt(idJeu,idAdherent,date);
-		nbEmp=CompteEmprunt(le, e, nbEmp);
+		nbEmp=compteEmprunt(le, e, nbEmp);
 		if (nbEmp == 3)
 		{
 			printf("\n\tCet Adherent a déjà 3 emprunts en cours\n");
 			return;
 		}
-		printf("nbEmp :%d\n", nbEmp);
+		compteur=compteLesEmpruntsAvecLesMemesInfos(le, e, compteur);
+		if (compteur>0)
+		{
+			sprintf(temp, "%d", compteur);
+			strcat(e.idEmprunt, temp);
+		}
 		affichageDate(e.dateEmprunt);
 		printf("\n\n");
 		le=ajouterEmprunt(le,e);
 		tJeux[rangJ]->nbExJeu=tJeux[rangJ]->nbExJeu-1;
 	}
+	return;
 }
 
-int CompteEmprunt(ListeEmprunt le, Emprunt emp, int i)
+int compteLesEmpruntsAvecLesMemesInfos(ListeEmprunt le, Emprunt emp, int i)
 {
-	int cmp;
 	if(le==NULL)
 	{
 		return i;
 	}
-	cmp=strcmp(le->e.idAdherent, emp.idAdherent);
-	printf("%s\n", le->e.idAdherent);
-	printf("%s\n", emp.idAdherent);
-	printf(" :%d\n", cmp);
+	if(strcmp(le->e.idAdherent, emp.idAdherent)== 0 && strcmp(le->e.idJeu, emp.idJeu)==0 
+		&& le->e.dateEmprunt.jour==emp.dateEmprunt.jour && le->e.dateEmprunt.mois==emp.dateEmprunt.mois 
+		&& le->e.dateEmprunt.annee==emp.dateEmprunt.annee)
+	{
+		i++;
+	}
+	i=compteLesEmpruntsAvecLesMemesInfos(le->suivant, emp, i);
+	return i;
+}
+
+int compteEmprunt(ListeEmprunt le, Emprunt emp, int i)
+{
+	if(le==NULL)
+	{
+		return i;
+	}
 	if(strcmp(le->e.idAdherent, emp.idAdherent)== 0)
 	{
 		i++;
-		printf("i :%d\n", i);
-
 	}
-	i=CompteEmprunt(le->suivant, emp, i);
+	i=compteEmprunt(le->suivant, emp, i);
 	return i;
 
 }
@@ -1409,6 +1445,21 @@ void freeListeReservation(ListeReservation lr)
 	return;
 }
 
+int compteLesReservationsAvecLesMemesInfos(ListeReservation lr, Reservation r, int i)
+{
+	if(lr==NULL)
+	{
+		return i;
+	}
+	if(strcmp(lr->res.idAdherent, r.idAdherent)== 0 && strcmp(lr->res.idJeu, r.idJeu)==0 
+		&& lr->res.dateReservation.jour==r.dateReservation.jour && lr->res.dateReservation.mois==r.dateReservation.mois 
+		&& lr->res.dateReservation.annee==r.dateReservation.annee)
+	{
+		i++;
+	}
+	i=compteLesReservationsAvecLesMemesInfos(lr->suivant, r, i);
+	return i;
+}
 
 //----------------------------- MENU -------------------------------------------	
 
@@ -1593,6 +1644,7 @@ void menuGlobal(void) // MODIF
 	//chargement des fichiers 
 	nbJeux=tailleTableau("jeux.bin");//pour le chargement binaire
 	//nbJeux=tailleTableau("jeux.don");//pour le chargement classique
+	printf("%d\n",nbJeux);
 	tJeux=malloc (nbJeux*sizeof(Jeux));
 	if(tJeux == NULL)
 	{
@@ -1686,7 +1738,9 @@ void menuGlobal(void) // MODIF
 		if(choix==2)
 		{
 			//system("clear");
-			faireUnEmpruntouUneReservation(le, lr, tJeux, tAdherent, nbJeux, nbAdherent);
+			printf("%d\n", nbAdherent);
+			faireUnEmpruntouUneReservation(le, lr, tJeux, tAdherent, nbJeux, &nbAdherent);
+			printf("%d\n", nbAdherent);
 		}
 		if (choix==3)
 			{
@@ -1783,7 +1837,7 @@ void menuGlobal(void) // MODIF
 						
 						tAdherent=temptAdherent;
 						tAdherent[nbAdherent-1]=(Adherent *) malloc(sizeof(Adherent));
-						if (tAdherent[nbAdherent]==NULL)
+						if (tAdherent[nbAdherent-1]==NULL)
 						{
 							printf("Erreur durant l'allocation!\n");
 							return;

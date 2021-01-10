@@ -121,12 +121,13 @@ void AfficherListeEmprunt(ListeEmprunt le,Adherent *tAdherent[],int nbAdherent, 
 int chercherEmprunt(ListeEmprunt le,char idEmprunt[], Emprunt *e);
 ListeEmprunt supprimerEmprunt(ListeEmprunt le, Emprunt e);
 ListeEmprunt supprimerEnTeteEmprunt(ListeEmprunt le);
-int CompteEmprunt(ListeEmprunt le, Emprunt emp, int i);
+int compteEmprunt(ListeEmprunt le, Emprunt emp, int i);
+int compteLesEmpruntsAvecLesMemesInfos(ListeEmprunt le, Emprunt emp, int i);
 void sauvegardeBinaireEmprunts(ListeEmprunt le);
 ListeEmprunt chargementBinairetEmrunts(void);
 void freeListeEmprunt(ListeEmprunt le);
 
-void faireUnEmpruntouUneReservation(ListeEmprunt le, ListeReservation lr, Jeux* tJeux[], Adherent* tAdherent[], int nbJeux, int nbAdherent);
+void faireUnEmpruntouUneReservation(ListeEmprunt le, ListeReservation lr, Jeux* tJeux[], Adherent* tAdherent[], int nbJeux, int *nbAdherent);
 
 //void testEmprunt(void);
 //void testFaireEmprunt(void);
@@ -147,6 +148,7 @@ int rechercheReservation(ListeReservation lr ,char idJeu[], Reservation *r);
 int choixSousMenuReservation(void);
 void afficherSousMenuReservation(void);
 void afficherListeReservationPourUnJeuDonne(ListeReservation lr, Adherent *tAdherent[], int nbAdherent, Jeux* tJeux[], int nbJeux);
+int compteLesReservationsAvecLesMemesInfos(ListeReservation lr, Reservation r, int i);
 
 void afficherMenuType(void);
 void MenuType(Jeux* tJeux[], int GameSize);
