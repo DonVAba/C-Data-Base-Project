@@ -98,7 +98,7 @@ int plusRecenteDate(Date d1,Date d2)
 
 
 
-void chargerJeux(char* fileName, Jeux* tJeux[]) // Loading the game's file
+void chargerJeux(char* fileName, Jeux *tJeux[]) // Loading the game's file
 
 {
 	FILE *flot;
@@ -114,7 +114,7 @@ void chargerJeux(char* fileName, Jeux* tJeux[]) // Loading the game's file
 	fscanf(flot,"%d%*c", &nbJeux);
 	//tJeux=malloc(*nbJeux*sizeof(Jeux));
 	j=lireJeu(flot);
-	for (i = 0; i < nbJeux; i++)
+	for (i = 0; !feof(flot); i++)
 	{
 		
 		tJeux[i]=(Jeux*) malloc(sizeof(Jeux));
@@ -126,9 +126,6 @@ void chargerJeux(char* fileName, Jeux* tJeux[]) // Loading the game's file
 		}
 		*tJeux[i]=j;
 		j=lireJeu(flot);
-		
-	
-
 	}
 	fclose(flot);
 }
@@ -869,8 +866,8 @@ Emprunt creationEmprunt(char idJeu[],char idAdherent[],Date d)
 	printf("%s\n", idJeu);
 	printf("%s\n", idAdherent);
 	
-	char temp[2];
-	char temp2[4];
+	char temp[3];
+	char temp2[5];
 	strcpy(e.idJeu,idJeu);
 	strcpy(e.idAdherent,idAdherent);
 	e.dateEmprunt=d;
@@ -1219,8 +1216,8 @@ Reservation lireReservation(FILE *flot)
 Reservation creationReservation(char idJeu[20], char idAdherent[20],Date dateReservation)
 {
 	Reservation r;
-	char temp[2];
-	char temp2[4];
+	char temp[3];
+	char temp2[5];
 	r.dateReservation.jour=dateReservation.jour;
 	r.dateReservation.mois=dateReservation.mois;
 	r.dateReservation.annee=dateReservation.annee;
@@ -1632,7 +1629,7 @@ int choixSousMenuJeux(void)
 
 void menuGlobal(void) // MODIF
 {
-	int choix, choixSousMenu, choixType, j, i, choixSousMenuA, chercherAdh, choixResa;
+	int choix, choixSousMenu, choixType, j, i, choixSousMenuA, chercherAdh, choixResa, nb;
 	Jeux **tJeux, **temptJeux;
 	Adherent **tAdherent, a, **temptAdherent;
 	ListeEmprunt le;
@@ -1642,25 +1639,24 @@ void menuGlobal(void) // MODIF
 	char c, idEmprunt[30];
 	
 	//chargement des fichiers 
-	nbJeux=tailleTableau("jeux.bin");//pour le chargement binaire
-	//nbJeux=tailleTableau("jeux.don");//pour le chargement classique
+	//nbJeux=tailleTableau("jeux.bin");//pour le chargement binaire
+	nbJeux=tailleTableau("jeux.don");//pour le chargement classique
 	printf("%d\n",nbJeux);
-	tJeux=malloc (nbJeux*sizeof(Jeux));
+	tJeux=(Jeux**) malloc (nbJeux*sizeof(Jeux*));
 	if(tJeux == NULL)
 	{
 		printf("Problème sur malloc\n");
 		return;
 	}
-	//tJeux=chargerJeux("jeux.don",tJeux);
 	chargementBinaireTJeux(tJeux);
 
 	nbAdherent=tailleTableau("adherents.bin");
-	//nbJeux=tailleTableau("adherents.don");
+	//nbAdherent=tailleTableau("adherents.don");
 	if (nbAdherent==-1)
 	{
 		return;
 	}
-	tAdherent=malloc (nbAdherent*sizeof(Adherent));
+	tAdherent=(Adherent**) malloc (nbAdherent*sizeof(Adherent*));
 	if(tAdherent == NULL)
 	{
 		printf("Problème sur malloc\n");
@@ -1668,7 +1664,7 @@ void menuGlobal(void) // MODIF
 	}
 	//chargerAdherents("adherents.don",tAdherent);
 	chargementBinaireTAdherents(tAdherent);
-	triAdherent(tAdherent, nbAdherent);
+	//triAdherent(tAdherent, nbAdherent);
 
 	//le=chargerListeEmprunt("emprunts2.don", le);
 	le=chargementBinairetEmrunts();
@@ -1801,7 +1797,7 @@ void menuGlobal(void) // MODIF
 				if (choixSousMenuA==1)
 				{
 					//system("clear");
-					temptJeux= realloc  (tJeux, (nbJeux+1)*sizeof(Jeux));
+					temptJeux=(Jeux**) realloc  (tJeux, (nbJeux+1)*sizeof(Jeux*));
 					if (temptJeux==NULL)
 					{
 						printf("Probléme sur realloc.\n");
@@ -1828,7 +1824,7 @@ void menuGlobal(void) // MODIF
 					{
 						
 						nbAdherent=nbAdherent+1;
-						temptAdherent= realloc  (tAdherent, nbAdherent*sizeof(Adherent));
+						temptAdherent=(Adherent**) realloc  (tAdherent, nbAdherent*sizeof(Adherent*));
 						if (temptAdherent==NULL)
 						{
 							printf("Probléme sur realloc.\n");
