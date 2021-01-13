@@ -10,7 +10,9 @@
 //---------------------- DATE ------------------------------------------------
 
 
-
+/*Reçoit un fichier déjà ouvert
+	Lit une le jour,le mois et l’année d’une Date sur le fichier FLOT
+	Retourne cette Date*/
 
 
 Date lireDate(FILE *flot)
@@ -21,15 +23,22 @@ Date lireDate(FILE *flot)
 	return d;
 }
 
+/*Reçoit une date
+	Écrit cette date au format JJ/MM/AAAA*/
+
 void affichageDate(Date d)
 {
 	printf("%d/%d/%d",d.jour,d.mois,d.annee);
 }
 
+/*Demande à l’utilisateur d’écrire le jour,le mois et l’année d’une date (souvent la date du jour)
+	Retourne cette Date
+	// Peut-être remplacée par la fonction current_date à certains moments*/
+
 Date ecrireDate(void)
 {
     Date d;
-    printf("\n\tEcrire le jour(1-31)\n\t");
+    printf("\n\tÉcrire le jour(1-31)\n\t");
     scanf("%d%*c",&d.jour);
     while (d.jour<1 || d.jour>31)
     {
@@ -38,11 +47,11 @@ Date ecrireDate(void)
     }
 
 
-    printf("\n\tEcrire le mois(1-12)\n\t");
+    printf("\n\tÉcrire le mois(1-12)\n\t");
     scanf("%d%*c", &d.mois);
     while (d.mois<1 || d.mois>12)
     {
-    	printf("\n\tErreur, ecrire correctement le mois(1-12)\n\t");
+    	printf("\n\tErreur, écrire correctement le mois(1-12)\n\t");
     	scanf("%d%*c", &d.mois);
     }
 
@@ -50,12 +59,18 @@ Date ecrireDate(void)
     scanf("%d%*c", &d.annee);
     while (d.annee<2020)
     {
-    	printf("\n\tErreur, ecrire correctement l'annee(2020-20XX)\n\t");
+    	printf("\n\tErreur, écrire correctement l'année(2020-20XX)\n\t");
     	scanf("%d%*c", &d.annee);
     }
  
 	return d;
 }
+
+/*Reçois 2 dates
+	Compare l’année de ces 2 dates
+	Si elles sont égales compare leur mois
+	S’ils sont égaux compare leur jour
+	Retourne l'indice de la date la plus récente*/
 
 
 int plusRecenteDate(Date d1,Date d2)
@@ -95,7 +110,12 @@ int plusRecenteDate(Date d1,Date d2)
 
 
 
-
+/*Reçois un nom de fichier et le tableau de pointeur déclaré mais vide
+	Ouvre un fichier flot
+	Lit le nombre de jeux écrit dans la première ligne du fichier
+	Lit un jeu à partir d’un fichier
+	Alloue ce même nombre lu ci-dessus,d’espace pour les pointeurs
+	Rempli la valeur des pointeurs avec les jeux lus*/
 
 
 void chargerJeux(char* fileName, Jeux *tJeux[]) // Loading the game's file
@@ -130,6 +150,10 @@ void chargerJeux(char* fileName, Jeux *tJeux[]) // Loading the game's file
 	fclose(flot);
 }
 
+/*Reçoit un nomFichier
+	Lit le nombre de jeux
+	Retourne le nombre de jeux*/
+
 int tailleTableau(char nomFichier[20])
 {
 	int tailleTableau;
@@ -144,6 +168,11 @@ int tailleTableau(char nomFichier[20])
 	fclose (flot);
 	return tailleTableau;
 }
+
+/*Reçois le tableau de pointeur
+	Ouvre le fichier binaire dans lequel le tableau de pointeur a été sauvegardé
+	Rempli le tableau
+	Ferme le fichier*/
 
 void chargementBinaireTJeux(Jeux **tJeux)
 {
@@ -173,6 +202,10 @@ void chargementBinaireTJeux(Jeux **tJeux)
 	fclose (flot);
 }
 
+/*Reçois un fichier déjà ouvert
+	Lit un ID de jeu,un type de jeu, un nombre d’exemplaire disponibles et un nom
+	Retourne un jeu*/
+
 Jeux lireJeu(FILE *flot)
 {
 	Jeux j;
@@ -184,6 +217,12 @@ Jeux lireJeu(FILE *flot)
 	return j;
 }
 
+/*Reçois le tableau de pointeur et le nombre de jeux
+	Demande l’ID du jeu
+	Cherche cet ID dans le tableau
+	Retourne -1 s’il n’existe pas
+	Sinon supprime le pointeur sur le jeu
+	Retourne le nouveau nombre de jeux*/
 
 
 int supprimerJeux(Jeux* tJeux[], int nbJeux)
@@ -207,6 +246,11 @@ int supprimerJeux(Jeux* tJeux[], int nbJeux)
 	return nbJeux-1;
 }
 
+/*Reçois un ID Jeu, le tableau de pointeur et le nombre de jeu
+	Tant que on a pas examiné le dernier ID Jeu
+		Si l’ID correspond on retourne le rang
+	Si on ne trouve pas l’ID on retourne -1*/
+
 int chercherJeux(char idJeu[], Jeux *tJeux[], int nbJeux)
 {
 	int i;
@@ -219,6 +263,9 @@ int chercherJeux(char idJeu[], Jeux *tJeux[], int nbJeux)
 	return -1;
 }
 
+/*Reçois le tableau de pointeur et le nombre de jeux
+	Écrit chaque jeu un par un*/
+
 void affichageTousJeux(Jeux* tJeux[],int GameSize)
 {
 	int i;
@@ -228,6 +275,14 @@ void affichageTousJeux(Jeux* tJeux[],int GameSize)
 		printf("\t\t%s\t\t%s\t\t%d\t\t\t%s\n",tJeux[i]->idJeu,tJeux[i]->typeJeu,tJeux[i]->nbExJeu,tJeux[i]->nomJeu);
 	}
 }
+
+/*Reçois le tableau de pointeur, le nombre de jeux et un type déclaré avant l’appel de cette 	fonction
+	Déclare un tableau de pointeur temporaire
+	Rempli ce tableau de tous les jeux ayant le type de l’appel et un nombre d’exemplaire supérieur 	à 0
+	Appelle la fonction triJeux
+	Affiche le tableau temporaire trié
+	Libère les espaces alloués pour ce tableau temporaires
+*/
 
 
 void affichageListeJeuxDisponibles(Jeux* tJeux[],int size,char type[]) 		// LISTES possible si jamais
@@ -264,7 +319,7 @@ void affichageListeJeuxDisponibles(Jeux* tJeux[],int size,char type[]) 		// LIST
 	printf("\t\tID\tExemplaires\t\tTitre\n\n");
 	for (i = 0; i < j; i++)
 	{
-		printf("\t\t%s\t\t%d\t\t\t%s\n",temp[i]->idJeu,temp[i]->nbExJeu,temp[i]->nomJeu);
+		printf("\t\t%s\t%d\t\t\t%s\n",temp[i]->idJeu,temp[i]->nbExJeu,temp[i]->nomJeu);
 	}
 		
 	for (i = 0; i < j; i++)
@@ -272,6 +327,9 @@ void affichageListeJeuxDisponibles(Jeux* tJeux[],int size,char type[]) 		// LIST
 	
 
 }
+
+/*Reçois un tableau de pointeur temporaire et la taille de ce tableau
+	Tant qu’on est pas au dernier, appel la fonction rechercheRMin et la fonction permutation*/
 
 void triJeux(Jeux *TempJeux[],int size)
 {
@@ -283,6 +341,10 @@ void triJeux(Jeux *TempJeux[],int size)
 		permutation(TempJeux,k,rmin);
 	}
 }
+
+/*Reçois un tableau de pointeur et de variable qui n’ont pas encore de valeur
+	Compare chaque élément du tableau
+	Retourne le rang de l’élément le plus petit*/
 
 int RechercheRMin(Jeux *TempJ[],int i,int n)			// Récursivité possible si jamais
 {
@@ -297,7 +359,10 @@ int RechercheRMin(Jeux *TempJ[],int i,int n)			// Récursivité possible si jama
 	}
 
 	return rmin;
-}		
+}	
+
+/*Reçois le tableau de pointeur temporaire et deux rangs
+	Permutent les deux éléments du tableaux appartenant aux rangs*/	
 
 
 void permutation(Jeux *TempJ[],int i,int j)
@@ -308,6 +373,13 @@ void permutation(Jeux *TempJ[],int i,int j)
 	*TempJ[i]=*TempJ[j];
 	*TempJ[j]=permutation;
 }
+
+/*Reçois le tableau de pointeur Jeux, la liste des emprunts, la liste des réservations et le nombre 	de jeux
+	Demande l’ID de l’emprunt afin d’effectuer le retour
+	Cherche l’emprunt pour voir s’il existe
+	Supprime cet emprunt
+	Recherche s’il y a une réservation pour le jeu emprunté
+	Si oui crée un emprunt à partir de cette réservation sinon ajoute 1 aux nombres d’exemplaires du jeu*/
 
 void retourJeux(Jeux *tJeux[],ListeEmprunt *le, ListeReservation *lr,int nbJeux, Adherent *tAdherent[], int nbAdherent) 
 {	
@@ -350,6 +422,11 @@ void retourJeux(Jeux *tJeux[],ListeEmprunt *le, ListeReservation *lr,int nbJeux,
 		*lr=supprimerUneReservation(*lr, r);
 	}	
 }
+
+/*Reçois le tableau de pointeur et le nombre de jeux
+	Créer un jeu
+	Ajoute ce jeu dans le tableaux
+	Retourne le nouveau nombre de jeux*/
 
 int ajouterJeux(Jeux *tJeux[], int nbJeux)
 {
@@ -403,6 +480,14 @@ void insertionJeu(Jeux **tJeux, int rang, int nbJeux, Jeux j)
 	}
 	*tJeux[nbJeux-1]=j;
 }*/
+
+
+/*Reçois le tableau de pointeur, le nombre de jeux et un pointeur sur une variable
+	Demande de rentrer un ID, un type ,un nombre d’exemplaire et un nom de jeu
+	Lit les réponses
+	Recherche le jeu
+	Défini la valeur du pointeur par le rang d’insertion du jeu s’il n’existe déjà pas
+	Retourne ce jeu*/
 
 Jeux creerJeux(Jeux *tJeux[], int nbJeux,int *rang)
 {
@@ -460,6 +545,11 @@ void sauvegardeJEUXNormale(Jeux *tJeux[], int nbJeux)
 }
 */
 
+/*Reçois le tableau de pointeur et le nombre de jeux
+	Ouvre un fichier binaire
+	Écrit les valeurs du tableau de pointeur sur le fichier
+	Ferme le fichier*/
+
 void sauvegardeTjeuxBinaire(Jeux *tJeux[], int nbJeux)
 {
 	FILE *flot;
@@ -483,6 +573,11 @@ void sauvegardeTjeuxBinaire(Jeux *tJeux[], int nbJeux)
 	}
 	free(tJeux);
 }
+
+/*Reçois le tableau de pointeur, et un pointeur sur le nombre de jeux
+	Remet les valeurs sauvegardées sur le fichier dans le tableau
+	Ferme le fichier*/
+
 /*
 Jeux** restaureTJeux(Jeux *tJeux[], int *nbJeux)
 {
@@ -517,7 +612,10 @@ Jeux** restaureTJeux(Jeux *tJeux[], int *nbJeux)
 
 
 
-
+/*Reçoit un nom de fichier, un tableau de pointeur sur des Adherents et un nombre d’adherent
+	Ouvre un fichier portant le nom donné à l’appel de la fonction de chargement
+	Lit les adhérents et alloue un espace pour chacun au fur et à mesure
+	Ferme le fichier*/
 
 
 
@@ -553,6 +651,9 @@ void chargerAdherents(char* fileName, Adherent* tAdherent[]) // Loading the adhe
 	fclose(flot);
 }
 
+/*Reçois un tableau de pointeur temporaire et la taille de ce tableau
+	Tant qu’on est pas au dernier, appel la fonction rechercheRMinA et la fonction permutationA*/
+
 void triAdherent(Adherent *TempAdherent[],int size)
 {
 	int k,rmin;
@@ -563,6 +664,10 @@ void triAdherent(Adherent *TempAdherent[],int size)
 		permutationA(TempAdherent,k,rmin);
 	}
 }
+
+/*Reçois un tableau de pointeur et de variable qui n’ont pas encore de valeur
+	Compare chaque élément du tableau
+	Retourne le rang de l’élément le plus petit*/
 
 int RechercheRMinA(Adherent *TempA[],int i,int n)			
 {
@@ -579,6 +684,8 @@ int RechercheRMinA(Adherent *TempA[],int i,int n)
 	return rmin;
 }		
 
+/*Reçois le tableau de pointeur temporaire et deux rangs
+	Permutent les deux éléments du tableaux appartenant aux rangs*/
 
 void permutationA(Adherent *TempA[],int i,int j)	
 {
@@ -588,6 +695,10 @@ void permutationA(Adherent *TempA[],int i,int j)
 	*TempA[i]=*TempA[j];
 	*TempA[j]=permutation;
 }
+
+/*Reçois un fichier déjà ouvert
+	Lit les données appartenant à la structure d’un adherent
+	Retourne cet adhérent*/
 
 Adherent lireAdherent(FILE *flot)
 {
@@ -601,6 +712,14 @@ Adherent lireAdherent(FILE *flot)
 	return a;
 }
 					//Lire adherent
+
+/*Reçois le tableau de pointeur adhérent et le nombre de jeux
+	Demande les valeurs appartenant à la structure Adherent
+	Lit ces valeurs
+	Recherche si cet Adhérent existe déjà
+	Si oui quitte la la fonction
+	Sinon crée un ID Adhérent
+	Retourne cet adhérent*/
 
 Adherent creerAdherent(Adherent *tAdherent[],int nbAdherent, int *chercherAdh)
 {
@@ -643,6 +762,10 @@ Adherent creerAdherent(Adherent *tAdherent[],int nbAdherent, int *chercherAdh)
 	}	
 }
 
+/*Reçoit un ID adherent, le tableau de pointeur et le nombre d’adherent
+	Cherche si l’adhérent avec l’ID reçu existe
+	Si oui retourne -1
+	Sinon retourne son rang d’insertion*/
 
 int chercherAdherent(char idAdherent[],Adherent *tAdherent[],int nbAdherent)
 {
@@ -660,6 +783,12 @@ int chercherAdherent(char idAdherent[],Adherent *tAdherent[],int nbAdherent)
 		
 	return -1;
 }
+
+/*Reçois le tableau de pointeur Adhérent et le nombre d’adhérent
+	Demande l’ID de l’adhérent qu’on veut supprimer
+	Cherche si l’adhérent existe
+	Si oui supprime cet adhérent et renvoie le nouveau nombre d’adhérent
+	Sinon renvoie -1*/
 
 int supprimerAdherent(Adherent *tAdherent[], int nbAdherent)
 {
@@ -682,7 +811,10 @@ int supprimerAdherent(Adherent *tAdherent[], int nbAdherent)
 	return nbAdherent-1;
 }
 
-
+/*Reçois le tableau de pointeur adhérent et le nombre d’adhérent
+	Ouvre un fichier où on va écrire
+	Écrit les données des adhérents sur le fichier
+	Ferme le fichier*/
 
 void sauvegardeNormaleAdherent(Adherent *tAdherent[], int nbAdherent)
 {
@@ -759,6 +891,11 @@ void minuscule(char chaine[])
 	
 }
 
+/*Reçois le tableau de pointeur adhérent et le nombre d’adhérent
+	Ouvre un fichier binaire où on va écrire
+	Écrit les données des adhérents sur le fichier
+	Ferme le fichier
+	Libère l’espace alloué pour le tableau*/
 
 void sauvegardeTAdherentBinaire(Adherent *tAdherents[], int nbAdherents)
 {
@@ -782,6 +919,11 @@ void sauvegardeTAdherentBinaire(Adherent *tAdherents[], int nbAdherents)
 	}
 	free (tAdherents);
 }
+
+/*Reçois le tableau de pointeur, et un pointeur sur le nombre d’adherent
+	Remet les valeurs sauvegardées sur le fichier dans le tableau
+	Ferme le fichier
+	Retourne le tableau de pointeur*/
 
 void chargementBinaireTAdherents(Adherent **tAdherent)
 {
@@ -818,6 +960,12 @@ void chargementBinaireTAdherents(Adherent **tAdherent)
 
 //---------------------- EMPRUNT ------------------------------------------------
 
+/*Reçois un nom de fichier et la liste emprunt
+	Ouvre le fichier
+	Défini comme NULL le premier maillon de la liste
+	Appelle la fonction mettreEnListe
+	Ferme le fichier
+	Retourne la liste*/
 
 ListeEmprunt chargerListeEmprunt(char* fileName,ListeEmprunt le)
 {
@@ -836,6 +984,10 @@ ListeEmprunt chargerListeEmprunt(char* fileName,ListeEmprunt le)
 	return le;
 }
 
+/*Reçois un fichier ouvert et la liste des emprunts
+	Tant que le fichier n’est pas à sa fin on lit un emprunt
+		et appelle de la fonction InsertTeteEmprunt
+	Retourne la liste*/
 
 ListeEmprunt mettreEnListe(FILE *flot,ListeEmprunt le)
 {
@@ -850,6 +1002,9 @@ ListeEmprunt mettreEnListe(FILE *flot,ListeEmprunt le)
 	return le;
 }
 
+/*Reçois un fichier ouvert
+	Lit les données d’un emprunt
+	Retourne un emprunt*/
 
 Emprunt lireEmprunt(FILE *flot)
 {
@@ -859,6 +1014,9 @@ Emprunt lireEmprunt(FILE *flot)
     return e;
 }
 
+/*Reçois un ID Jeu, un ID adherent et une date
+	Crée un ID Emprunt
+	Retourne l’emprunt*/	
 
 Emprunt creationEmprunt(char idJeu[],char idAdherent[],Date d)
 {
@@ -884,13 +1042,17 @@ Emprunt creationEmprunt(char idJeu[],char idAdherent[],Date d)
 	return e;
 }
 
-					
-					
+		
+//Retourne NULL			
 
 ListeEmprunt empruntvide(void)
 {
 	return NULL;
 }
+
+/*Reçois la liste d’emprunt et un emprunt
+	Ajoute l’emprunt en fonction de sa date d’emprunt
+	Retourne la liste*/
 
 ListeEmprunt ajouterEmprunt(ListeEmprunt le,Emprunt em)
 {
@@ -909,6 +1071,10 @@ ListeEmprunt ajouterEmprunt(ListeEmprunt le,Emprunt em)
 	return le;
 }
 
+/*Reçois la liste d’emprunt et un emprunt
+	Insère l’emprunt
+	Retourne la liste*/
+
 ListeEmprunt InsertionEnTete(ListeEmprunt le,Emprunt emp)
 {
 	ListeEmprunt le1;
@@ -920,6 +1086,12 @@ ListeEmprunt InsertionEnTete(ListeEmprunt le,Emprunt emp)
 	le1->suivant=le;
 	return le1;
 }
+
+/*Reçois la liste d’emprunt,le tableau de pointeur adherent, le nombre d’adherent,le tableau de 	pointeur de jeux et le nombre de jeux
+	Cherche le rang de l’adhérent de l’emprunt
+	Cherche le rang de l’adhérent du jeu
+	Affiche l’emprunt
+	Appelle la fonction AfficherListeEmprunt avec le maillon suivant*/
 
 void AfficherListeEmprunt(ListeEmprunt le,Adherent *tAdherent[],int nbAdherent, Jeux* tJeux[],int nbJeux)	// A COMPLETER
 {
@@ -967,6 +1139,10 @@ ListeEmprunt chercherEmprunt(ListeEmprunt le,char idEmprunt[])
 }
 */
 
+/*Reçois la liste d’emprunt et un ID Emprunt
+	Cherche en fonction de l’ID et retourne 0 si trouvée
+	Sinon retourne -1*/
+
 int chercherEmprunt(ListeEmprunt le,char idEmprunt[], Emprunt *e)
 {
 	while(le!=NULL)
@@ -982,6 +1158,11 @@ int chercherEmprunt(ListeEmprunt le,char idEmprunt[], Emprunt *e)
 	return -1;	
 }
 
+/*Reçois la liste d’emprunt et un ID emprunt
+	Si l’ID est le même appel de la fonction supprimerEnTeteEmprunt
+	Sinon appelle la fonction supprimerEmprunt avec le maillon suivant
+	Retourne la liste*/
+
 ListeEmprunt supprimerEmprunt(ListeEmprunt le, Emprunt e)
 {
 	if(le==NULL)
@@ -996,6 +1177,10 @@ ListeEmprunt supprimerEmprunt(ListeEmprunt le, Emprunt e)
 	return le;
 }
 
+/*Reçoit la liste d’emprunt
+	Lie le maillon précédent avec le maillon suivant
+	Libère l’espace de l’emprunt
+	Retourne le maillon suivant*/
 
 ListeEmprunt supprimerEnTeteEmprunt(ListeEmprunt le)
 {
@@ -1004,6 +1189,15 @@ ListeEmprunt supprimerEnTeteEmprunt(ListeEmprunt le)
 	free(le);
 	return svt;
 }
+
+/*Reçoit les listes emprunt et réservations, les tableaux de pointeurs Jeux et Adherents, le nombre de jeux et le nomrbe d'adherent en pointeur
+	Demande de saisir un ID adhérent
+	Cherche le rang de l'adherent et redemande un ID si non trouvé et quitte la fonction si "exit" tapé
+	Demande ensuite un ID de jeu
+	Cherche le rang de ce jeu et redemande un ID si non trouvé et quitte la fonction si "exit" est tapé
+	Appelle la fonction écrire Date
+	Si le jeu n'est pas disponible, crée une réservation sinon crée un emprunt et annule l'emprunt si l'adhérent a 3 emprunts
+	*/ 
 
 
 void faireUnEmpruntouUneReservation(ListeEmprunt le, ListeReservation lr, Jeux* tJeux[], Adherent* tAdherent[], int nbJeux, int *nbAdherent)
@@ -1020,7 +1214,7 @@ void faireUnEmpruntouUneReservation(ListeEmprunt le, ListeReservation lr, Jeux* 
 	rangA=chercherAdherent(idAdherent, tAdherent, *nbAdherent);
 	while(rangA==-1)
 	{
-		printf("L'adherent n'existe pas, retaper un ID valide, tapez 'exit' pour sortir, tapez 'nouveau' pour savoir comment créer un nouvle adherent\n");
+		printf("L'adherent n'existe pas, retaper un ID valide, tapez 'exit' pour sortir, tapez 'nouveau' pour savoir comment créer un nouvel adherent\n");
 		scanf("%s%*c", idAdherent);
 		if (strcmp(idAdherent,"exit")==0)
 			return;
@@ -1090,6 +1284,11 @@ void faireUnEmpruntouUneReservation(ListeEmprunt le, ListeReservation lr, Jeux* 
 	return;
 }
 
+/*Reçois la liste d’emprunt, un emprunt et un entier
+	Si l’ID emprunt du maillon est le même que celui de l’emprunt incrémente i de 
+	Appelle la fonction compteEmprunt avec le maillon suivant
+	Retourne i à la fin de la liste*/
+
 int compteLesEmpruntsAvecLesMemesInfos(ListeEmprunt le, Emprunt emp, int i)
 {
 	if(le==NULL)
@@ -1121,6 +1320,12 @@ int compteEmprunt(ListeEmprunt le, Emprunt emp, int i)
 
 }
 
+/*Reçois la liste d’emprunt
+	Ouvre le fichier binaire
+	Écrit la liste sur un fichier binaire
+	Libère l’espace pour la liste
+	Ferme le fichier*/
+
 void sauvegardeBinaireEmprunts(ListeEmprunt le)
 {
 	FILE *flot;
@@ -1137,6 +1342,11 @@ void sauvegardeBinaireEmprunts(ListeEmprunt le)
 	}
 	fclose(flot);
 }
+
+/*Ouvre un fichier binaire
+	Remet dans la liste d’emprunt les données
+	Ferme le fichier
+	Retourne la liste*/
 
 ListeEmprunt chargementBinairetEmrunts(void)
 {
@@ -1171,7 +1381,7 @@ ListeEmprunt chargementBinairetEmrunts(void)
 
 
 
-
+//Retourne NULL
 
 
 
@@ -1179,6 +1389,10 @@ ListeReservation reservationVide(void)
 {
 	return NULL;
 }
+
+/*Reçois une liste de réservation et une réservation
+	Insère la réservation
+	Retourne la liste */
 
 ListeReservation ajouterEnTete(ListeReservation lr, Reservation r)
 {
@@ -1188,6 +1402,13 @@ ListeReservation ajouterEnTete(ListeReservation lr, Reservation r)
 	a->suivant=lr;
 	return a;
 }
+
+/*Reçois une liste de réservations
+	Ouvre un fichier
+	Tant que la fin du fichier n’est pas atteinte :
+		Ajoute une réservation
+		Lit une réservation
+	Retourne la liste*/
 
 ListeReservation CreationDeLaListe(ListeReservation lr)
 {
@@ -1204,6 +1425,9 @@ ListeReservation CreationDeLaListe(ListeReservation lr)
 	return lr;
 }
 
+/*Reçoit un fichier déjà ouvert
+	Lit les données d’une réservation
+	Retourne la réservation*/
 
 Reservation lireReservation(FILE *flot)
 {
@@ -1212,6 +1436,11 @@ Reservation lireReservation(FILE *flot)
 	r.dateReservation=lireDate(flot);
 	return r;
 }
+
+/*Reçoit un ID Jeu, un ID adhérent et une date de réservation
+	Met une réservation les valeurs
+	Crée un ID réservation
+	Retourne la réservation*/
 
 Reservation creationReservation(char idJeu[20], char idAdherent[20],Date dateReservation)
 {
@@ -1235,6 +1464,10 @@ Reservation creationReservation(char idJeu[20], char idAdherent[20],Date dateRes
 	return r;
 }
 
+/*Reçois la liste de réservation et une réservation
+	Insère la réservation en fonction de sa date (1ère = plus récente)
+	Retourne la liste*/
+
 ListeReservation ajouterReservation(ListeReservation lr, Reservation r)
 {
 	int d;
@@ -1250,6 +1483,12 @@ ListeReservation ajouterReservation(ListeReservation lr, Reservation r)
 	lr->suivant=ajouterReservation(lr->suivant,r);
 	return lr;
 }
+
+/*Reçois la liste de réservation,le tableau de pointeur adherent, le nombre d’adherent,le tableau de 	pointeur de jeux et le nombre de jeux
+	Cherche le rang de l’adhérent de la réservation
+	Cherche le rang de l’adhérent du jeu réservé
+	Affiche la réservation
+	Appelle la fonction AfficherListeRéservation avec le maillon suivant*/
 
 void afficherListeReservation(ListeReservation lr, Adherent *tAdherent[], int nbAdherent, Jeux* tJeux[], int nbJeux)	// A COMPLETER
 {
@@ -1279,6 +1518,13 @@ void afficherListeReservation(ListeReservation lr, Adherent *tAdherent[], int nb
 	printf("\n\n\n");
 	afficherListeReservation(lr->suivant,tAdherent,nbAdherent,tJeux,nbJeux);
 }
+
+/*Reçois la liste de réservation,le tableau de pointeur adherent, le nombre d’adherent,le tableau de pointeur de jeux et le nombre de jeux
+	Ecrit et li un ID jeu
+	Cherche le rang de l’adhérent de la réservation
+	Cherche le rang de l’adhérent du jeu réservé
+	Affiche la réservation
+	Appelle la fonction AfficherListeRéservation avec le maillon suivant*/
 
 void afficherListeReservationPourUnJeuDonne(ListeReservation lr, Adherent *tAdherent[], int nbAdherent, Jeux* tJeux[], int nbJeux)
 {
@@ -1310,6 +1556,11 @@ void afficherListeReservationPourUnJeuDonne(ListeReservation lr, Adherent *tAdhe
 	}
 }	
 
+/*
+	Reçoit la liste des réservations , une chaine de caractère et un pointeur sur une réservation
+	Retourne 0 si trouvé sinon -1
+*/
+
 int rechercheReservation(ListeReservation lr ,char idJeu[], Reservation *r)
 {
 	while (lr!=NULL)
@@ -1337,6 +1588,12 @@ int rechercheReservationBis(ListeReservation lr, Reservation r)
 	return -1;
 }
 
+/*Reçois la liste de réservation
+	Ouvre le fichier binaire
+	Écrit la liste sur un fichier binaire
+	Libère l’espace pour la liste
+	Ferme le fichier*/
+
 void sauvegardeBinaireReservation(ListeReservation lr)
 {
 	FILE *flot;
@@ -1353,6 +1610,11 @@ void sauvegardeBinaireReservation(ListeReservation lr)
 	}
 	fclose(flot);
 }
+
+/*Ouvre un fichier binaire
+	Remet dans la liste de réservation les données
+	Ferme le fichier
+	Retourne la liste*/
 
 ListeReservation chargementBinairetReservations(void)
 {
@@ -1376,6 +1638,11 @@ ListeReservation chargementBinairetReservations(void)
 	return lr;
 }
 
+/*Reçoit la liste de réservation
+	Lie le maillon précédent avec le maillon suivant
+	Libère l’espace de la réservation
+	Retourne le maillon suivant*/
+
 ListeReservation supprimerEnTeteUneReservation(ListeReservation lr)
 {
 	ListeReservation svt;
@@ -1383,6 +1650,12 @@ ListeReservation supprimerEnTeteUneReservation(ListeReservation lr)
 	free(lr);
 	return svt;
 }
+
+/*Reçois la liste d’emprunt et une réservation
+	Si l’ID est le même appel de la fonction supprimerEnTeteEmprunt
+	Sinon appelle la fonction supprimerUneRéservation avec le maillon suivant
+	Retourne la liste
+*/
 
 ListeReservation supprimerUneReservation(ListeReservation lr, Reservation r)
 {
@@ -1413,7 +1686,8 @@ ListeReservation rechercheReservation(ListeReservation lr,char idJeu[])
 			
 }*/
 
-					//chercher Réservation
+/*Reçoit la liste des emprunts
+	Libère les espaces alloués pour cette liste*/
 			
 void freeListeEmprunt(ListeEmprunt le)
 {
@@ -1428,6 +1702,9 @@ void freeListeEmprunt(ListeEmprunt le)
 	free(suiv);
 }
 
+/*Reçoit la liste de réservation
+	Libère les espaces alloués pour cette liste*/
+
 void freeListeReservation(ListeReservation lr)
 {
 	MaillonR *suiv;
@@ -1441,6 +1718,12 @@ void freeListeReservation(ListeReservation lr)
 	free(suiv);
 	return;
 }
+
+/*Reçoit une liste de réservation,une réservation et un entier
+	Si les réservations sont les mêmes incrémente i
+	Sinon appelle la fonction avec le maillon suivant
+	retourne i
+*/
 
 int compteLesReservationsAvecLesMemesInfos(ListeReservation lr, Reservation r, int i)
 {
