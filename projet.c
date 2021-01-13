@@ -134,7 +134,7 @@ void chargerJeux(char* fileName, Jeux *tJeux[]) // Loading the game's file
 	fscanf(flot,"%d%*c", &nbJeux);
 	//tJeux=malloc(*nbJeux*sizeof(Jeux));
 	j=lireJeu(flot);
-	for (i = 0; !feof(flot); i++)
+	for (i = 0; i<nbJeux ; i++)
 	{
 		
 		tJeux[i]=(Jeux*) malloc(sizeof(Jeux));
@@ -213,7 +213,10 @@ Jeux lireJeu(FILE *flot)
 	fscanf(flot,"%s%*c",j.typeJeu);
 	fscanf(flot,"%d%*c",&j.nbExJeu);
 	fgets(j.nomJeu,40,flot);
-	j.nomJeu[strlen(j.nomJeu)-1]='\0';
+	if (j.nomJeu[strlen(j.nomJeu)-1]!='\0')
+	{
+		j.nomJeu[strlen(j.nomJeu)-1]='\0';
+	}
 	return j;
 }
 
@@ -374,7 +377,8 @@ void permutation(Jeux *TempJ[],int i,int j)
 	*TempJ[j]=permutation;
 }
 
-/*Reçois le tableau de pointeur Jeux, la liste des emprunts, la liste des réservations et le nombre 	de jeux
+/*Reçois le tableau de pointeur Jeux, la liste des emprunts, la liste des réservations, le nombre de jeux,
+	le tableau de pointeur des adherents et le nombre d'adherents
 	Demande l’ID de l’emprunt afin d’effectuer le retour
 	Cherche l’emprunt pour voir s’il existe
 	Supprime cet emprunt
@@ -404,7 +408,7 @@ void retourJeux(Jeux *tJeux[],ListeEmprunt *le, ListeReservation *lr,int nbJeux,
 	retourRechRes=rechercheReservation(*lr, tempIdJeu, &r);
 	if (retourRechRes==-1)
 	{
-		i=chercherJeux((*le)->e.idJeu,tJeux,nbJeux);
+		i=chercherJeux(tempIdJeu,tJeux,nbJeux);
 		tJeux[i]->nbExJeu=tJeux[i]->nbExJeu+1;
 		return;
 	}
@@ -713,7 +717,8 @@ Adherent lireAdherent(FILE *flot)
 }
 					//Lire adherent
 
-/*Reçois le tableau de pointeur adhérent et le nombre de jeux
+/*Reçois le tableau de pointeur adhérent, le nombre d'Adherent du tableau et un pointeur sur un entier 
+	qui contient -1 si l'Adherent existe déjà.
 	Demande les valeurs appartenant à la structure Adherent
 	Lit ces valeurs
 	Recherche si cet Adhérent existe déjà
@@ -756,12 +761,65 @@ Adherent creerAdherent(Adherent *tAdherent[],int nbAdherent, int *chercherAdh)
 			scanf("%s%*c", a.civilite);
 			printf("%s\n",a.civilite);
 		}
+		printf("Rentrer la date d'aujourd'hui :\n");
 		a.dateInscription=ecrireDate();
 		creerNomUtil(prenom,nom,6,2,a.idAdherent);
 		return a;
 	}	
 }
+/*
+	Fonction de recherche dichotomique de position d'insertion d'un adherent.
+	Prend en entré un : -id d'Adherent qui n'esiste pas dans le tableau (idAdherent),
+	-le tableau de pointeur d'adherents (**tAdherent),
+	-le nombre d'adherent dans le tableau (nbAdherent).
+	Rerourne (pos) la position d'insertion de l'adherent (correspondant à l'id passé en entrée).
+*/
+int rechdichinsertAdherent(char *idAdherent, Adherent**tAdherent, int nbAdherent)
+{
+	int deb=0, i, fin=nbAdherent-1;
+	while(deb <= fin)
+	{
+		i=(deb+fin)/2;
+		if(strcmp(idAdherent, tAdherent[i]->idAdherent)<0)
+		{
+			fin=i-1;
+		}
+		else
+		{
+			deb=i+1;
+		}
+	}
+	return deb;
+}
 
+/*
+	Fonction d'insertion d'un adherent dans le tableau à sa place.
+	Prend en entrée :-le tableau de pointeur d'adherents (**tAdherent),
+	-l'adherent à insérer (a),
+	-La position d'insertion (pos),
+	-le nombre d'adherent dans le tableau (nbAdherent).
+*/
+void insertionAdherent(Adherent **tAdherent, Adherent a, int pos, int nbAdherent)
+{
+	DecalerAdroit(tAdherent, pos, nbAdherent);
+	*tAdherent[pos]=a;
+}
+
+/*
+	Fonction de décalage à droite des éléments du tableau tadherent à partir d'une certaine position.
+	Prend en entrée :-le tableau de pointeur d'adherents (**tAdherent),
+	-La position à partir de laquelle décaler(pos),
+	-le nombre d'adherent dans le tableau (nbAdherent).
+*/
+void DecalerAdroit(Adherent **tAdherent, int pos, int nbAdherent)
+{
+	int i;
+	for(i=nbAdherent-1; i>=pos; i--)
+	{
+		*tAdherent[i+1]=*tAdherent[i];
+				
+	}
+}	
 /*Reçoit un ID adherent, le tableau de pointeur et le nombre d’adherent
 	Cherche si l’adhérent avec l’ID reçu existe
 	Si oui retourne -1
@@ -1912,7 +1970,7 @@ int choixSousMenuJeux(void)
 
 void menuGlobal(void) // MODIF
 {
-	int choix, choixSousMenu, choixType, j, i, choixSousMenuA, chercherAdh, choixResa, nb;
+	int choix, choixSousMenu, choixType, j, i, choixSousMenuA, chercherAdh, choixResa, pos;
 	Jeux **tJeux, **temptJeux;
 	Adherent **tAdherent, a, **temptAdherent;
 	ListeEmprunt le;
@@ -1922,8 +1980,8 @@ void menuGlobal(void) // MODIF
 	char c, idEmprunt[30];
 	
 	//chargement des fichiers 
-	//nbJeux=tailleTableau("jeux.bin");//pour le chargement binaire
-	nbJeux=tailleTableau("jeux.don");//pour le chargement classique
+	nbJeux=tailleTableau("jeux.bin");//pour le chargement binaire
+	//nbJeux=tailleTableau("jeux.don");//pour le chargement classique
 	printf("%d\n",nbJeux);
 	tJeux=(Jeux**) malloc (nbJeux*sizeof(Jeux*));
 	if(tJeux == NULL)
@@ -1931,7 +1989,8 @@ void menuGlobal(void) // MODIF
 		printf("Problème sur malloc\n");
 		return;
 	}
-	chargementBinaireTJeux(tJeux);
+	chargerJeux("jeux.don", tJeux);
+	//chargementBinaireTJeux(tJeux);
 
 	nbAdherent=tailleTableau("adherents.bin");
 	//nbAdherent=tailleTableau("adherents.don");
@@ -2121,8 +2180,8 @@ void menuGlobal(void) // MODIF
 							printf("Erreur durant l'allocation!\n");
 							return;
 						}
-						*tAdherent[nbAdherent-1]=a;
-						triAdherent(tAdherent, nbAdherent);
+						pos=rechdichinsertAdherent(a.idAdherent, tAdherent, nbAdherent-1);
+						insertionAdherent(tAdherent, a, pos, nbAdherent-1);
 					}
 				}
 				if(choixSousMenuA==4)
@@ -2136,12 +2195,12 @@ void menuGlobal(void) // MODIF
 		choix=choixMenuGlobal();
 
 	}
-	//sauvegardeTAdherentBinaire(tAdherent, nbAdherent);
-	//sauvegardeTjeuxBinaire(tJeux, nbJeux);
-	//sauvegardeBinaireReservation(lr);
-	//freeListeReservation(lr);
-	//sauvegardeBinaireEmprunts(le);
-	//freeListeEmprunt(le);
+	sauvegardeTAdherentBinaire(tAdherent, nbAdherent);
+	sauvegardeTjeuxBinaire(tJeux, nbJeux);
+	sauvegardeBinaireReservation(lr);
+	freeListeReservation(lr);
+	sauvegardeBinaireEmprunts(le);
+	freeListeEmprunt(le);
 
 }
 
