@@ -6,42 +6,52 @@
 
 //------------------------------------
 
-/*
+
 void testTrijeux(void)
 {
 	char nomFichier[20];
-	int size,i;
-	Jeux *tJeux[20];
+	int nbJeux,i;
+	Jeux *tJeux[100];
 
-	//printf("Saisir nom du fichier :");
-	//scanf("%s",nomFichier);
 	printf("\n");
-	size=chargerJeux("jeux.don",tJeux,20);
+	nbJeux=tailleTableau("jeux.don");
+	chargerJeux("jeux.don",tJeux);
 	printf("ID du Jeu\tType de Jeu\tNbe exemplaires\t\tNom du Jeu\n");
 	printf("\n\n");
-	for (i = 0; i < size; i++)
+	for (i = 0; i < nbJeux; i++)
 	{
 		printf("%s\t\t%s\t\t%d\t%s\n",tJeux[i]->idJeu,tJeux[i]->typeJeu,tJeux[i]->nbExJeu,tJeux[i]->nomJeu);
 	}
 	printf("\n\n");
-	affichageListeJeuxDisponibles(tJeux,size,"carte");
-	for (i = 0; i < size; i++)
+	affichageListeJeuxDisponibles(tJeux,nbJeux,"carte");
+	for (i = 0; i < nbJeux; i++)
 	{
 		free(tJeux[i]);
 	}
 }
-*/
+
 
 //------------------------------------
 
-/*
+
 void testCreerAdherent(void)
 {	
-	int size,i;
-	Adherent **tAdherent,a;
-	tAdherent=chargerAdherents("adherents.don", tAdherent, &size);
+	int nbAdherent,i, chercherAdh, pos;
+	Adherent **tAdherent, a, **temptAdherent;
+	nbAdherent=tailleTableau("adherents.bin");
+	if (nbAdherent==-1)
+	{
+		return;
+	}
+	tAdherent=(Adherent**) malloc (nbAdherent*sizeof(Adherent*));
+	if(tAdherent == NULL)
+	{
+		printf("Problème sur malloc\n");
+		return;
+	}
+	chargementBinaireTAdherents(tAdherent);
 	printf("\n");
-	for (i = 0; i < size; i++)
+	for (i = 0; i < nbAdherent; i++)
 	{
 		printf("%s\t",tAdherent[i]->idAdherent);
 		affichageDate(tAdherent[i]->dateInscription);
@@ -50,78 +60,44 @@ void testCreerAdherent(void)
 	}
 
 	printf("\n\n");
-	a=creerAdherent(tAdherent,size);
-	tAdherent[size]=(Adherent *) malloc(sizeof(Adherent));
-
-		if (tAdherent[size]==NULL)
+	a=creerAdherent(tAdherent, nbAdherent, &chercherAdh);
+	if (chercherAdh==-1)
+	{
+		nbAdherent=nbAdherent+1;
+		temptAdherent=(Adherent**) realloc  (tAdherent, nbAdherent*sizeof(Adherent*));
+		if (temptAdherent==NULL)
 		{
-			printf("Error : problem during allocation !\n");
+			printf("Probléme sur realloc.\n");
 			return;
 		}
-	*tAdherent[size]=a;
-	size=size+1;
 
-	for (i = 0; i < size; i++)
+		tAdherent=temptAdherent;
+		tAdherent[nbAdherent-1]=(Adherent *) malloc(sizeof(Adherent));
+		if (tAdherent[nbAdherent-1]==NULL)
+		{
+			printf("Erreur durant l'allocation!\n");
+			return;
+		}
+		pos=rechdichinsertAdherent(a.idAdherent, tAdherent, nbAdherent-1);
+		printf("ch=%d\n", chercherAdh);
+		printf("pos=%d\n", pos);
+		insertionAdherent(tAdherent, a, pos, nbAdherent-1);
+	}
+
+	for (i = 0; i < nbAdherent; i++)
 	{
 		printf("%s\t",tAdherent[i]->idAdherent);
 		affichageDate(tAdherent[i]->dateInscription);
 		printf("\t%s\t%s %s",tAdherent[i]->civilite,tAdherent[i]->nomAdherent,tAdherent[i]->prenomAdherent);
 		printf("\n");
 	}
-	for (i = 0; i < size; i++)
+	for (i = 0; i < nbAdherent; i++)
 	{
 		free(tAdherent[i]);
 	}
 
-}*/
-
-/*
-void testEmprunt(void)
-{
-	ListeEmprunt le;
-	Adherent *tAdherent[50],a;
-	Jeux *tJeux[20];
-	int nbJeux,nbAdherent;
-
-	nbJeux=chargerJeux("jeux.don",tJeux,20);
-	nbAdherent=chargerAdherents("test2.don",tAdherent,50);
-	le=chargerListeEmprunt("emprunt.don",le);
-	printf("\n");
-	AfficherListeEmprunt(le,tAdherent,nbAdherent,tJeux,nbJeux);
 }
 
-void testChercherAdherent(void)
-{
-	int size,i;
-	Adherent *tAdherent[50],a;
-	size=chargerAdherents("test2.don",tAdherent,50);
-
-	i=chercherAdherent("bamartel",tAdherent,size);
-	printf("%d\n",i);
-
-	for (i = 0; i < size; i++)
-	{
-		free(tAdherent[i]);
-	}
-}
-
-
-
-/*void testFaireEmprunt(void)
-{
-	int sizeJ, sizeA, i;
-	Adherent *tAdherent[50],a;
-	
-	Emprunt e;
-	ListeEmprunt le;
-	
-	Jeux *tJeux[20];
-	sizeJ=chargerJeux("jeux.don",tJeux,20);
-	sizeA=chargerAdherents("test2.don",tAdherent,50);
-	e=faireEmprunt(le, tJeux, tAdherent, sizeJ, sizeA);
-	return;
-}
-*/
 
 
 //------------------------------------
@@ -131,9 +107,6 @@ int main(void)
 {
 	//testTrijeux();
 	//testCreerAdherent();
-	//testEmprunt();
-	//testChercherAdherent();
-	//testFaireEmprunt();
 	menuGlobal();
 
 	return 0;
