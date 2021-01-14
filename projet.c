@@ -12,7 +12,7 @@
 
 /*Reçoit un fichier déjà ouvert
 	Lit une le jour,le mois et l’année d’une Date sur le fichier FLOT
-	Retourne cette Date*/
+	Retourne cette Date.*/
 
 
 Date lireDate(FILE *flot)
