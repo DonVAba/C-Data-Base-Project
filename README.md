@@ -1,5 +1,7 @@
-# C-Data-Base-Project
+# My First Computer Science Project
 
-My first computer science project.
-All the code is in the file projet.c
-That's a bit complicated to read cause, at this moment, I didn't know that we could separate our project in different .c files
+Welcome to my first computer science project! 🚀 In this repository, you'll find the code for my project, primarily located in the file `projet.c`.
+
+**Note:** Initially, the project is contained in a single file (`projet.c`), which might make it a bit challenging to read. At that time, I wasn't aware of the possibility of organizing the project into separate `.c` files.
+
+Feel free to explore the code and provide any feedback or suggestions. Happy coding! 👩‍💻👨‍💻
